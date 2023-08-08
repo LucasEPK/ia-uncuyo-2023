@@ -16,6 +16,8 @@ La inteligencia artificial se aplica en una amplia gama de sectores y campos, co
 
 ## 3. ¿Qué se entiende por Inteligencia ?
 
+![](img/albert_einstein.jpg)
+
 La inteligencia es una capacidad mental general que nos permite comprender, aprender, razonar, resolver problemas, adaptarnos al entorno y tomar decisiones adecuadas para enfrentar distintas situaciones. Es un concepto complejo y multifacético que ha sido objeto de estudio y debate en la psicología y otras disciplinas.
 
 Históricamente, la inteligencia se ha medido mediante pruebas de cociente intelectual (CI), que intentan evaluar la capacidad cognitiva de una persona en comparación con otras de su grupo de edad. Sin embargo, la definición y medición de la inteligencia han evolucionado con el tiempo para abarcar aspectos más amplios y variados de la capacidad mental.
@@ -27,6 +29,8 @@ Además, la inteligencia no se limita al ámbito humano, ya que también podemos
 En resumen, la inteligencia es una capacidad mental compleja que nos permite interactuar con el mundo, aprender de nuestras experiencias y adaptarnos a diferentes situaciones de manera efectiva. Es un concepto amplio que abarca diversos aspectos y puede manifestarse de diferentes maneras en diferentes individuos y especies.
 
 ## 4. ¿Qué se entiende por artificial ?
+
+![](img/machine.png)
 
 El término "artificial" se refiere a algo que ha sido creado, producido o generado por el ser humano, en contraste con lo que es natural o que existe de manera espontánea en la naturaleza. Lo artificial se opone a lo orgánico, biológico o generado de forma natural.
 
