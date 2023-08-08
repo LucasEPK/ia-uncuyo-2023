@@ -14,6 +14,14 @@ La *inteligencia artificial* (IA) **es una rama de la informática y la ciencia 
 
 La inteligencia artificial se aplica en una amplia gama de sectores y campos, como la medicina, la robótica, la industria, los servicios financieros, la atención al cliente, los sistemas de recomendación, los asistentes virtuales, los vehículos autónomos y muchos otros. A medida que la tecnología avanza, la inteligencia artificial continúa desempeñando un papel crucial en la transformación de la sociedad y la forma en que interactuamos con la tecnología y el mundo que nos rodea.
 
+**La inteligencia artificial se puede dividir en 4 categorias basadas en el tipo y complejidad de la tarea que un sistema puede realizar**:
+- **Reactive Machines**: (Maquinas reactivas) son capaces de percibir y reaccionar al mundo a su frente mientras realiza tareas limitadas;
+- **Limited Memory**: (Memoria limitada) son capaces de guardar datos del pasado y predicciones para hacer predicciones de lo que va a venir;
+- **Theory of mind**: (Teoria de la mente) son capaces de tomar decisiones basados en sus percepciones de como los otros se sienten y tomar decisiones;
+- **Self-Awareness**: (Consciente de si mismo) son capaces de operar con una consciencia a nivel humano y pueden entender su propria existencia.
+
+Hasta el dia de hoy no hemos llegado al nivel de Theory of mind o de Self-Awareness.
+
 Además es un concepto muy utilizado en la ciencia ficción, justamente por esto la gente tienen un concepto algo distorsionado o exagerado de lo que puede ser una inteligencia artificial, lo que provocó temor en el boom de la inteligencia artificial que hubo este año.
 
 Aunque se llame "inteligencia artificial", es importante destacar que **la IA no posee una conciencia o una inteligencia similar a la humana**, simplemente es una simulación de ciertas capacidades inteligentes.
@@ -42,4 +50,6 @@ En el contexto de la inteligencia artificial (IA), la palabra "artificial" indic
 
 ### Fuentes
 
-[chatGPT](https://chat.openai.com/)
+- [chatGPT](https://chat.openai.com/)
+
+- [https://github.com/LucasEPK/ia-uncuyo-2022/blob/main/tp1-fundamentos/ia1-activitidad1.md](https://github.com/LucasEPK/ia-uncuyo-2022/blob/main/tp1-fundamentos/ia1-activitidad1.md)
