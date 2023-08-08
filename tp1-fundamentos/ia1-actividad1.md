@@ -6,6 +6,8 @@
 
 ## 2. ¿Qué se entiende por inteligencia artificial ?
 
+![](img/ai_picture.jpg)
+
 La inteligencia artificial (IA) es una rama de la informática y la ciencia de la computación que se enfoca en crear sistemas y programas que puedan realizar tareas que, en apariencia, requieren de inteligencia humana. Estos sistemas buscan emular la capacidad de aprendizaje, razonamiento, percepción y toma de decisiones que normalmente asociamos con la inteligencia humana.
 
 El objetivo de la inteligencia artificial es desarrollar algoritmos y modelos que permitan a las máquinas procesar datos, aprender de ellos y mejorar su rendimiento con el tiempo, sin intervención humana directa en cada paso del proceso. Para lograrlo, los sistemas de inteligencia artificial utilizan diversas técnicas y enfoques, como el aprendizaje automático (machine learning), el procesamiento del lenguaje natural (NLP), la visión por computadora, la planificación y la optimización, entre otros.
