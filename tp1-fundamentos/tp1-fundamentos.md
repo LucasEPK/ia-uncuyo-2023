@@ -145,7 +145,11 @@ Si el invento del internet y del celular ha cambiado tanto al mundo, no alcanzo 
 
 # Ejercicio 2
 
+Usos malintencionados de las nuevas tecnologías siempre hay, yo creo que lo que habría que discutir sería si los beneficios que pueden traer estas tecnologías son más de los problemas. Y poner leyes y regular todo lo relacionado con problemas morales.
 
+Al fin y al cabo también el internet se puede utilizar para cosas muy malas pero se han puesto ciertas medidas para mitigar esto.
+
+Yo creo que la inteligencia artificial nos va a ser muy util para simplificar y aumentar la velocidad en el que hacemos cosas, haciéndonos así avanzar con tecnología y como sociedad más rápidamente. Cosa que también el internet en su momento nos ayudó a hacer, conectándonos con todo el conocimiento de todas las culturas.
 
 #### Fuentes
 
