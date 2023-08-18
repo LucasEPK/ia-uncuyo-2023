@@ -46,19 +46,94 @@ class Environment:
         else:
             self.space[x][y] = self.AGENT_WITH_DIRT_SPACE
     
+    def move_agent(self, agent, movement):
+
+        if self.get_space()[agent.get_position().x][agent.get_position().y] == self.AGENT_SPACE:
+            self.get_space()[agent.get_position().x][agent.get_position().y] = self.CLEAN_SPACE
+        else:
+            self.get_space()[agent.get_position().x][agent.get_position().y] = self.DIRTY_SPACE
+
+        match movement:
+            case "up":
+
+                if self.get_space()[agent.get_position().x][agent.get_position().y-1] == self.CLEAN_SPACE:
+                    self.get_space()[agent.get_position().x][agent.get_position().y-1] = self.AGENT_SPACE
+                else:
+                    self.get_space()[agent.get_position().x][agent.get_position().y-1] = self.AGENT_WITH_DIRT_SPACE
+
+                newPosition = Vector2()
+                newPosition.x = agent.get_position().x
+                newPosition.y = agent.get_position().y-1
+                agent.update_position(newPosition)
+
+            case "down":
+
+                if self.get_space()[agent.get_position().x][agent.get_position().y+1] == self.CLEAN_SPACE:
+                    self.get_space()[agent.get_position().x][agent.get_position().y+1] = self.AGENT_SPACE
+                else:
+                    self.get_space()[agent.get_position().x][agent.get_position().y+1] = self.AGENT_WITH_DIRT_SPACE
+                
+                newPosition = Vector2()
+                newPosition.x = agent.get_position().x
+                newPosition.y = agent.get_position().y+1
+                agent.update_position(newPosition)
+
+            case "left":
+
+                if self.get_space()[agent.get_position().x-1][agent.get_position().y] == self.CLEAN_SPACE:
+                    self.get_space()[agent.get_position().x-1][agent.get_position().y] = self.AGENT_SPACE
+                else:
+                    self.get_space()[agent.get_position().x-1][agent.get_position().y] = self.AGENT_WITH_DIRT_SPACE
+
+                newPosition = Vector2()
+                newPosition.x = agent.get_position().x-1
+                newPosition.y = agent.get_position().y
+                agent.update_position(newPosition)
+
+            case "right":
+
+                if self.get_space()[agent.get_position().x+1][agent.get_position().y] == self.CLEAN_SPACE:
+                    self.get_space()[agent.get_position().x+1][agent.get_position().y] = self.AGENT_SPACE
+                else:
+                    self.get_space()[agent.get_position().x+1][agent.get_position().y] = self.AGENT_WITH_DIRT_SPACE
+                
+                newPosition = Vector2()
+                newPosition.x = agent.get_position().x+1
+                newPosition.y = agent.get_position().y
+                agent.update_position(newPosition)
+    
     def clean_dirt(self, agentPosition):
         self.space[agentPosition.x][agentPosition.y] = self.AGENT_SPACE
 
 
     def accept_action(self, agent, action):
+
         match action:
             case "suck":
                 if self.get_space()[agent.get_position().x][agent.get_position().y] == self.AGENT_WITH_DIRT_SPACE:
                     return True
                 else:
                     return False
-            case _:
-                pass
+            case "up":
+                if agent.get_position().y == 0:
+                    return False
+                else:
+                    return True
+            case "down":
+                if agent.get_position().y == self.size.y - 1:
+                    return False
+                else:
+                    return True
+            case "left":
+                if agent.get_position().x == 0:
+                    return False
+                else:
+                    return True
+            case "right":
+                if agent.get_position().x == self.size.x - 1:
+                    return False
+                else:
+                    return True
 
     def is_dirty(self):
         pass
@@ -97,32 +172,36 @@ class Agent:
     def subtract_life(self):
         self.lives -= 1
     
-    def up(self):
-        self.subtract_life()
-        pass
+    def up(self, environment):
+        if environment.accept_action(self, "up"):
+            print("going up")
+            environment.move_agent(self, "up")
+            
 
-    def down(self):
-        self.subtract_life()
-        pass
+    def down(self, environment):
+        if environment.accept_action(self, "down"):
+            print("going down")
+            environment.move_agent(self, "down")
 
-    def left(self):
-        self.subtract_life()
-        pass
+    def left(self, environment):
+        if environment.accept_action(self, "left"):
+            print("going left")
+            environment.move_agent(self, "left")
 
-    def right(self):
-        self.subtract_life()
-        pass
+    def right(self, environment):
+        if environment.accept_action(self, "right"):
+            print("going right")
+            environment.move_agent(self, "right")
 
     def suck(self, environment):
 
         if environment.accept_action(self, "suck"):
-            self.subtract_life()
+            print("sucked")
             environment.clean_dirt(self.position)
         
         pass
 
     def idle(self):
-        self.subtract_life()
         pass
 
     def perspective(self, environment): # Returns true if the current position of the agent is dirty, if not it returns false
@@ -134,14 +213,29 @@ class Agent:
             return False
 
     def think(self, environment):
+        print("thought")
+        self.subtract_life()
 
         if self.perspective(environment):
             self.suck(environment)
         else:
-            self.move_randomly()
+            self.move_randomly(environment)
     
-    def move_randomly():
-        pass
+    def move_randomly(self, environment):
+        move = random.randint(1, 4)
+
+        match move:
+            case 1:
+                self.up(environment)
+            case 2:
+                self.down(environment)
+            case 3:
+                self.left(environment)
+            case 4:
+                self.right(environment)
+
+    def update_position(self, position):
+        self.position = position
 
     def get_position(self):
         return self.position
