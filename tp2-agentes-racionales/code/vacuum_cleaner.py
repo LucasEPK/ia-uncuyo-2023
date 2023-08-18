@@ -45,9 +45,20 @@ class Environment:
             self.space[x][y] = self.AGENT_SPACE
         else:
             self.space[x][y] = self.AGENT_WITH_DIRT_SPACE
+    
+    def clean_dirt(self, agentPosition):
+        self.space[agentPosition.x][agentPosition.y] = self.AGENT_SPACE
 
-    def accept_action(self, action):
-        pass
+
+    def accept_action(self, agent, action):
+        match action:
+            case "suck":
+                if self.get_space()[agent.get_position().x][agent.get_position().y] == self.AGENT_WITH_DIRT_SPACE:
+                    return True
+                else:
+                    return False
+            case _:
+                pass
 
     def is_dirty(self):
         pass
@@ -58,14 +69,82 @@ class Environment:
     def print_environment(self):
         matrices.print_matrix(self.space)
 
+    def get_space(self):
+        return self.space
+
 
 class Agent:
     position = Vector2()
+    lives = None
+    points = 0
 
     def __init__(self, environment):
         self.set_random_position(environment.size)
+        environment.add_agent(self)
+        self.set_lives(1000)
     
     def set_random_position(self, environment_size):
         self.position.x = random.randint(0, environment_size.x - 1)
         self.position.y = random.randint(0, environment_size.y - 1)
         print("x:", self.position.x+1, "y:", self.position.y+1)
+
+    def set_lives(self, lives):
+        self.lives = lives
+    
+    def set_points(self, points):
+        self.points = points
+
+    def subtract_life(self):
+        self.lives -= 1
+    
+    def up(self):
+        self.subtract_life()
+        pass
+
+    def down(self):
+        self.subtract_life()
+        pass
+
+    def left(self):
+        self.subtract_life()
+        pass
+
+    def right(self):
+        self.subtract_life()
+        pass
+
+    def suck(self, environment):
+
+        if environment.accept_action(self, "suck"):
+            self.subtract_life()
+            environment.clean_dirt(self.position)
+        
+        pass
+
+    def idle(self):
+        self.subtract_life()
+        pass
+
+    def perspective(self, environment): # Returns true if the current position of the agent is dirty, if not it returns false
+
+        space = environment.get_space()
+        if space[self.position.x][self.position.y] == environment.AGENT_WITH_DIRT_SPACE:
+            return True
+        else:
+            return False
+
+    def think(self, environment):
+
+        if self.perspective(environment):
+            self.suck(environment)
+        else:
+            self.move_randomly()
+    
+    def move_randomly():
+        pass
+
+    def get_position(self):
+        return self.position
+    
+    def get_lives(self):
+        return self.lives

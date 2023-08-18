@@ -9,6 +9,9 @@ size.y = 2
 env = Environment(size, 0.5)
 agent = Agent(env)
 
-env.add_agent(agent)
+print("agent lives: ", agent.get_lives())
+env.print_environment()
 
+agent.think(env)
+print("agent lives: ", agent.get_lives())
 env.print_environment()
