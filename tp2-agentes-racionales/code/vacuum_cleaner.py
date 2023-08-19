@@ -13,8 +13,8 @@ class Environment:
 
     def __init__(self, size, dirtRate):
         # Sets the size of the space matrix, creates the matrix, fills it with clean tiles, then adds dirt according to the given dirt rate
-        self.set_size(size.x, size.y)
-        self.space = matrices.create_matrix(size.x, size.y)
+        self.set_size(size.y, size.x)
+        self.space = matrices.create_matrix(size.y, size.x)
         matrices.fill_matrix(self.space, self.CLEAN_SPACE)
         self.add_dirt(dirtRate)
 
@@ -28,8 +28,8 @@ class Environment:
             x = random.randint(0, self.size.x - 1)
             y = random.randint(0, self.size.y - 1)
 
-            if self.space[x][y] == self.CLEAN_SPACE:
-                self.space[x][y] = self.DIRTY_SPACE
+            if self.space[y][x] == self.CLEAN_SPACE:
+                self.space[y][x] = self.DIRTY_SPACE
                 numberOfTilesToFill -= 1
 
     def set_size(self, x, y):
@@ -41,76 +41,76 @@ class Environment:
         x = agent.position.x
         y = agent.position.y
 
-        if self.space[x][y] == self.CLEAN_SPACE:
-            self.space[x][y] = self.AGENT_SPACE
+        if self.space[y][x] == self.CLEAN_SPACE:
+            self.space[y][x] = self.AGENT_SPACE
         else:
-            self.space[x][y] = self.AGENT_WITH_DIRT_SPACE
+            self.space[y][x] = self.AGENT_WITH_DIRT_SPACE
     
     def move_agent(self, agent, movement):
 
-        if self.get_space()[agent.get_position().x][agent.get_position().y] == self.AGENT_SPACE:
-            self.get_space()[agent.get_position().x][agent.get_position().y] = self.CLEAN_SPACE
+        if self.get_space()[agent.get_position().y][agent.get_position().x] == self.AGENT_SPACE:
+            self.get_space()[agent.get_position().y][agent.get_position().x] = self.CLEAN_SPACE
         else:
-            self.get_space()[agent.get_position().x][agent.get_position().y] = self.DIRTY_SPACE
+            self.get_space()[agent.get_position().y][agent.get_position().x] = self.DIRTY_SPACE
 
         match movement:
             case "up":
 
-                if self.get_space()[agent.get_position().x][agent.get_position().y-1] == self.CLEAN_SPACE:
-                    self.get_space()[agent.get_position().x][agent.get_position().y-1] = self.AGENT_SPACE
+                if self.get_space()[agent.get_position().y - 1][agent.get_position().x] == self.CLEAN_SPACE:
+                    self.get_space()[agent.get_position().y - 1][agent.get_position().x] = self.AGENT_SPACE
                 else:
-                    self.get_space()[agent.get_position().x][agent.get_position().y-1] = self.AGENT_WITH_DIRT_SPACE
+                    self.get_space()[agent.get_position().y - 1][agent.get_position().x] = self.AGENT_WITH_DIRT_SPACE
 
                 newPosition = Vector2()
                 newPosition.x = agent.get_position().x
-                newPosition.y = agent.get_position().y-1
+                newPosition.y = agent.get_position().y - 1
                 agent.update_position(newPosition)
 
             case "down":
 
-                if self.get_space()[agent.get_position().x][agent.get_position().y+1] == self.CLEAN_SPACE:
-                    self.get_space()[agent.get_position().x][agent.get_position().y+1] = self.AGENT_SPACE
+                if self.get_space()[agent.get_position().y + 1][agent.get_position().x] == self.CLEAN_SPACE:
+                    self.get_space()[agent.get_position().y + 1][agent.get_position().x] = self.AGENT_SPACE
                 else:
-                    self.get_space()[agent.get_position().x][agent.get_position().y+1] = self.AGENT_WITH_DIRT_SPACE
+                    self.get_space()[agent.get_position().y + 1][agent.get_position().x] = self.AGENT_WITH_DIRT_SPACE
                 
                 newPosition = Vector2()
                 newPosition.x = agent.get_position().x
-                newPosition.y = agent.get_position().y+1
+                newPosition.y = agent.get_position().y + 1
                 agent.update_position(newPosition)
 
             case "left":
 
-                if self.get_space()[agent.get_position().x-1][agent.get_position().y] == self.CLEAN_SPACE:
-                    self.get_space()[agent.get_position().x-1][agent.get_position().y] = self.AGENT_SPACE
+                if self.get_space()[agent.get_position().y][agent.get_position().x - 1] == self.CLEAN_SPACE:
+                    self.get_space()[agent.get_position().y][agent.get_position().x - 1] = self.AGENT_SPACE
                 else:
-                    self.get_space()[agent.get_position().x-1][agent.get_position().y] = self.AGENT_WITH_DIRT_SPACE
+                    self.get_space()[agent.get_position().y][agent.get_position().x - 1] = self.AGENT_WITH_DIRT_SPACE
 
                 newPosition = Vector2()
-                newPosition.x = agent.get_position().x-1
+                newPosition.x = agent.get_position().x - 1
                 newPosition.y = agent.get_position().y
                 agent.update_position(newPosition)
 
             case "right":
 
-                if self.get_space()[agent.get_position().x+1][agent.get_position().y] == self.CLEAN_SPACE:
-                    self.get_space()[agent.get_position().x+1][agent.get_position().y] = self.AGENT_SPACE
+                if self.get_space()[agent.get_position().y][agent.get_position().x + 1] == self.CLEAN_SPACE:
+                    self.get_space()[agent.get_position().y][agent.get_position().x + 1] = self.AGENT_SPACE
                 else:
-                    self.get_space()[agent.get_position().x+1][agent.get_position().y] = self.AGENT_WITH_DIRT_SPACE
+                    self.get_space()[agent.get_position().y][agent.get_position().x + 1] = self.AGENT_WITH_DIRT_SPACE
                 
                 newPosition = Vector2()
-                newPosition.x = agent.get_position().x+1
+                newPosition.x = agent.get_position().x + 1
                 newPosition.y = agent.get_position().y
                 agent.update_position(newPosition)
     
     def clean_dirt(self, agentPosition):
-        self.space[agentPosition.x][agentPosition.y] = self.AGENT_SPACE
+        self.space[agentPosition.y][agentPosition.x] = self.AGENT_SPACE
 
 
     def accept_action(self, agent, action):
 
         match action:
             case "suck":
-                if self.get_space()[agent.get_position().x][agent.get_position().y] == self.AGENT_WITH_DIRT_SPACE:
+                if self.get_space()[agent.get_position().y][agent.get_position().x] == self.AGENT_WITH_DIRT_SPACE:
                     return True
                 else:
                     return False
@@ -173,33 +173,32 @@ class Agent:
         self.lives -= 1
     
     def up(self, environment):
+        print("tried going up")
         if environment.accept_action(self, "up"):
-            print("going up")
             environment.move_agent(self, "up")
             
 
     def down(self, environment):
+        print("tried going down")
         if environment.accept_action(self, "down"):
-            print("going down")
             environment.move_agent(self, "down")
 
     def left(self, environment):
+        print("tried going left")
         if environment.accept_action(self, "left"):
-            print("going left")
             environment.move_agent(self, "left")
 
     def right(self, environment):
+        print("tried going right")
         if environment.accept_action(self, "right"):
-            print("going right")
             environment.move_agent(self, "right")
 
     def suck(self, environment):
 
+        print("tried sucking")
         if environment.accept_action(self, "suck"):
-            print("sucked")
             environment.clean_dirt(self.position)
         
-        pass
 
     def idle(self):
         pass
@@ -207,7 +206,7 @@ class Agent:
     def perspective(self, environment): # Returns true if the current position of the agent is dirty, if not it returns false
 
         space = environment.get_space()
-        if space[self.position.x][self.position.y] == environment.AGENT_WITH_DIRT_SPACE:
+        if space[self.position.y][self.position.x] == environment.AGENT_WITH_DIRT_SPACE:
             return True
         else:
             return False
@@ -236,6 +235,7 @@ class Agent:
 
     def update_position(self, position):
         self.position = position
+        print("new position: x", position.x+1, "y", position.y+1)
 
     def get_position(self):
         return self.position
