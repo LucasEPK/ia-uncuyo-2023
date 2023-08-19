@@ -12,6 +12,6 @@ agent = Agent(env)
 print("agent lives: ", agent.get_lives())
 env.print_environment()
 
-agent.think(env)
+agent.think()
 print("agent lives: ", agent.get_lives())
 env.print_environment()

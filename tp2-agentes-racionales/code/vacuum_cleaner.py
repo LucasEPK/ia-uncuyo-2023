@@ -1,6 +1,7 @@
+# This module implements an environment and an agent for the vacuum cleaner environment
 import matrices
 from vectors import Vector2
-import random
+from random import randint
 
 class Environment:
     space = None
@@ -11,33 +12,30 @@ class Environment:
     AGENT_WITH_DIRT_SPACE = "@"
     
 
-    def __init__(self, size, dirtRate):
+    def __init__(self, size: Vector2, dirtRate: float):
         # Sets the size of the space matrix, creates the matrix, fills it with clean tiles, then adds dirt according to the given dirt rate
         self.set_size(size.y, size.x)
         self.space = matrices.create_matrix(size.y, size.x)
         matrices.fill_matrix(self.space, self.CLEAN_SPACE)
         self.add_dirt(dirtRate)
 
-    def add_dirt(self, dirtRate):
+    def add_dirt(self, dirtRate: float):
         # Adds dirt to the space matrix randomly, the quantity depends on the dirt rate given
         dirtPercentage = dirtRate * 100
 
         numberOfTilesToFill = round(dirtPercentage * (self.size.x * self.size.y) / 100)
         print("total dirty tiles:", numberOfTilesToFill)
         while numberOfTilesToFill > 0:
-            x = random.randint(0, self.size.x - 1)
-            y = random.randint(0, self.size.y - 1)
+            x = randint(0, self.size.x - 1)
+            y = randint(0, self.size.y - 1)
 
             if self.space[y][x] == self.CLEAN_SPACE:
                 self.space[y][x] = self.DIRTY_SPACE
                 numberOfTilesToFill -= 1
 
-    def set_size(self, x, y):
-        # Sets the size of the environment
-        self.size.x = x
-        self.size.y = y
     
     def add_agent(self, agent):
+        # Adds the given agent to the space matrix
         x = agent.position.x
         y = agent.position.y
 
@@ -46,8 +44,10 @@ class Environment:
         else:
             self.space[y][x] = self.AGENT_WITH_DIRT_SPACE
     
-    def move_agent(self, agent, movement):
-
+    def move_agent(self, agent, movement: str):
+        # Moves the specified agent according to the movement given
+        # All of the ifs are to make sure the correct tile is visualized, for example if the agent moves right and the tile it left was dirty, it should stay dirty, and the next tile be the agent or the agent with dirt depending on what it was before
+        
         if self.get_space()[agent.get_position().y][agent.get_position().x] == self.AGENT_SPACE:
             self.get_space()[agent.get_position().y][agent.get_position().x] = self.CLEAN_SPACE
         else:
@@ -102,12 +102,13 @@ class Environment:
                 newPosition.y = agent.get_position().y
                 agent.update_position(newPosition)
     
-    def clean_dirt(self, agentPosition):
+    def clean_dirt(self, agentPosition: Vector2):
+        # Removes the dirt in the position given
         self.space[agentPosition.y][agentPosition.x] = self.AGENT_SPACE
 
 
-    def accept_action(self, agent, action):
-
+    def accept_action(self, agent, action: str):
+        # Checks if the action given is valid to take with the agent given
         match action:
             case "suck":
                 if self.get_space()[agent.get_position().y][agent.get_position().x] == self.AGENT_WITH_DIRT_SPACE:
@@ -135,107 +136,140 @@ class Environment:
                 else:
                     return True
 
-    def is_dirty(self):
-        pass
+
+    def print_environment(self):
+        # Prints the space matrix
+        matrices.print_matrix(self.space)
+
+    # Setters
+    def set_size(self, x: int, y: int):
+        # Sets the size of the environment
+        self.size.x = x
+        self.size.y = y
+
+    # Getters
+    def get_space(self):
+        return self.space
 
     def get_performance(self):
         pass
 
-    def print_environment(self):
-        matrices.print_matrix(self.space)
 
-    def get_space(self):
-        return self.space
+
+
+
+
 
 
 class Agent:
     position = Vector2()
-    lives = None
-    points = 0
+    lives: int = None
+    points: int = 0
+    environment: Environment = None
 
-    def __init__(self, environment):
+    def __init__(self, environment: Environment):
+        # Sets the environment in which the agent will move in, chooses a random position to start the agent in, adds the agent to the environment and sets the total lives of the agent
+        self.set_environment(environment)
         self.set_random_position(environment.size)
         environment.add_agent(self)
         self.set_lives(1000)
     
-    def set_random_position(self, environment_size):
-        self.position.x = random.randint(0, environment_size.x - 1)
-        self.position.y = random.randint(0, environment_size.y - 1)
-        print("x:", self.position.x+1, "y:", self.position.y+1)
-
-    def set_lives(self, lives):
-        self.lives = lives
-    
-    def set_points(self, points):
-        self.points = points
 
     def subtract_life(self):
         self.lives -= 1
     
-    def up(self, environment):
+    def up(self):
+        # Goes up in the environment
         print("tried going up")
-        if environment.accept_action(self, "up"):
-            environment.move_agent(self, "up")
+        if self.get_environment().accept_action(self, "up"):
+            self.get_environment().move_agent(self, "up")
             
 
-    def down(self, environment):
+    def down(self):
+        # Goes down in the environment
         print("tried going down")
-        if environment.accept_action(self, "down"):
-            environment.move_agent(self, "down")
+        if self.get_environment().accept_action(self, "down"):
+            self.get_environment().move_agent(self, "down")
 
-    def left(self, environment):
+    def left(self):
+        # Goes left in the environment
         print("tried going left")
-        if environment.accept_action(self, "left"):
-            environment.move_agent(self, "left")
+        if self.get_environment().accept_action(self, "left"):
+            self.get_environment().move_agent(self, "left")
 
-    def right(self, environment):
+    def right(self):
+        # Goes right in the environment
         print("tried going right")
-        if environment.accept_action(self, "right"):
-            environment.move_agent(self, "right")
+        if self.get_environment().accept_action(self, "right"):
+            self.get_environment().move_agent(self, "right")
 
-    def suck(self, environment):
-
+    def suck(self):
+        # Sucks the dirt in the current position
         print("tried sucking")
-        if environment.accept_action(self, "suck"):
-            environment.clean_dirt(self.position)
+        if self.get_environment().accept_action(self, "suck"):
+            self.get_environment().clean_dirt(self.position)
         
 
     def idle(self):
+        # Doesn't move
         pass
 
-    def perspective(self, environment): # Returns true if the current position of the agent is dirty, if not it returns false
+    def perspective(self) -> bool: # Returns true if the current position of the agent is dirty, if not it returns false
 
-        space = environment.get_space()
-        if space[self.position.y][self.position.x] == environment.AGENT_WITH_DIRT_SPACE:
+        space = self.get_environment().get_space()
+        if space[self.position.y][self.position.x] == self.get_environment().AGENT_WITH_DIRT_SPACE:
             return True
         else:
             return False
 
-    def think(self, environment):
+    def think(self):
+        # Thinks of what the next move is gonna be, if the current position is dirty, it sucks if not it moves in a random direction
         print("thought")
         self.subtract_life()
 
-        if self.perspective(environment):
-            self.suck(environment)
+        if self.perspective():
+            self.suck()
         else:
-            self.move_randomly(environment)
+            self.move_randomly()
     
-    def move_randomly(self, environment):
-        move = random.randint(1, 4)
+    def move_randomly(self):
+        # Makes the player move in a random direction
+        move = randint(1, 4)
 
         match move:
             case 1:
-                self.up(environment)
+                self.up()
             case 2:
-                self.down(environment)
+                self.down()
             case 3:
-                self.left(environment)
+                self.left()
             case 4:
-                self.right(environment)
+                self.right()
 
-    def update_position(self, position):
+    def update_position(self, position : Vector2):
+        # Updates the agent position with the position given
         self.position = position
-        print("new position: x", position.x+1, "y", position.y+1)
+        print("new position: x", position.x + 1, "y", position.y + 1)
+
+    # Setters
+    def set_environment(self, environment: Environment):
+        self.environment = environment
+
+    def set_random_position(self, environment_size: Vector2):
+        # Sets a random position for the agent
+        self.position.x = randint(0, environment_size.x - 1)
+        self.position.y = randint(0, environment_size.y - 1)
+        print("x:", self.position.x+1, "y:", self.position.y+1)
+
+    def set_lives(self, lives: int):
+        self.lives = lives
+    
+    def set_points(self, points: int):
+        self.points = points
+
+    # Getters
+    def get_environment(self) -> Environment:
+        return self.environment
 
     def get_position(self):
         return self.position
