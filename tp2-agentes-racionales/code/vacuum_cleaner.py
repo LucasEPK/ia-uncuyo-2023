@@ -6,6 +6,7 @@ from random import randint
 class Environment:
     space = None
     size = Vector2()
+    total_dirt: int = None
     CLEAN_SPACE = "X"
     DIRTY_SPACE = "a"
     AGENT_SPACE = "O"
@@ -24,6 +25,7 @@ class Environment:
         dirtPercentage = dirtRate * 100
 
         numberOfTilesToFill = round(dirtPercentage * (self.size.x * self.size.y) / 100)
+        self.set_total_dirt(numberOfTilesToFill)
         print("total dirty tiles:", numberOfTilesToFill)
         while numberOfTilesToFill > 0:
             x = randint(0, self.size.x - 1)
@@ -47,7 +49,7 @@ class Environment:
     def move_agent(self, agent, movement: str):
         # Moves the specified agent according to the movement given
         # All of the ifs are to make sure the correct tile is visualized, for example if the agent moves right and the tile it left was dirty, it should stay dirty, and the next tile be the agent or the agent with dirt depending on what it was before
-        
+
         if self.get_space()[agent.get_position().y][agent.get_position().x] == self.AGENT_SPACE:
             self.get_space()[agent.get_position().y][agent.get_position().x] = self.CLEAN_SPACE
         else:
@@ -103,8 +105,10 @@ class Environment:
                 agent.update_position(newPosition)
     
     def clean_dirt(self, agentPosition: Vector2):
-        # Removes the dirt in the position given
+        # Removes the dirt in the position given and updates the total dirt remaining
         self.space[agentPosition.y][agentPosition.x] = self.AGENT_SPACE
+
+        self.set_total_dirt(self.total_dirt-1)
 
 
     def accept_action(self, agent, action: str):
@@ -137,6 +141,13 @@ class Environment:
                     return True
 
 
+    def is_dirty(self) -> bool:
+        # Returns true if the total dirt in the environment is more than 0, if not it returns false
+        if self.get_total_dirt() != 0:
+            return True
+        else:
+            return False
+
     def print_environment(self):
         # Prints the space matrix
         matrices.print_matrix(self.space)
@@ -147,12 +158,18 @@ class Environment:
         self.size.x = x
         self.size.y = y
 
+    def set_total_dirt(self, total_dirt: int):
+        self.total_dirt = total_dirt
+    
     # Getters
     def get_space(self):
         return self.space
 
     def get_performance(self):
         pass
+    
+    def get_total_dirt(self) -> int:
+        return self.total_dirt
 
 
 
@@ -173,10 +190,6 @@ class Agent:
         self.set_random_position(environment.size)
         environment.add_agent(self)
         self.set_lives(1000)
-    
-
-    def subtract_life(self):
-        self.lives -= 1
     
     def up(self):
         # Goes up in the environment
@@ -204,10 +217,11 @@ class Agent:
             self.get_environment().move_agent(self, "right")
 
     def suck(self):
-        # Sucks the dirt in the current position
+        # Sucks the dirt in the current position if it is dirty
         print("tried sucking")
         if self.get_environment().accept_action(self, "suck"):
             self.get_environment().clean_dirt(self.position)
+            self.add_point()
         
 
     def idle(self):
@@ -245,7 +259,20 @@ class Agent:
                 self.left()
             case 4:
                 self.right()
+    
+    def is_alive(self) -> bool:
+        # Returns true if the agent lives are more than 0 if not it returns false
+        if self.get_lives() <= 0:
+            return False
+        else:
+            return True    
 
+    def add_point(self):
+        self.points += 1
+
+    def subtract_life(self):
+        self.lives -= 1
+    
     def update_position(self, position : Vector2):
         # Updates the agent position with the position given
         self.position = position
