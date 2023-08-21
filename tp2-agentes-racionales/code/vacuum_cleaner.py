@@ -180,7 +180,7 @@ class Environment:
 
 class Agent:
     position = Vector2()
-    lives: int = None
+    lives: int = None # Lives are taken every time the agent thinks
     points: int = 0
     environment: Environment = None
 
@@ -193,32 +193,27 @@ class Agent:
     
     def up(self):
         # Goes up in the environment
-        print("tried going up")
         if self.get_environment().accept_action(self, "up"):
             self.get_environment().move_agent(self, "up")
             
 
     def down(self):
         # Goes down in the environment
-        print("tried going down")
         if self.get_environment().accept_action(self, "down"):
             self.get_environment().move_agent(self, "down")
 
     def left(self):
         # Goes left in the environment
-        print("tried going left")
         if self.get_environment().accept_action(self, "left"):
             self.get_environment().move_agent(self, "left")
 
     def right(self):
         # Goes right in the environment
-        print("tried going right")
         if self.get_environment().accept_action(self, "right"):
             self.get_environment().move_agent(self, "right")
 
     def suck(self):
         # Sucks the dirt in the current position if it is dirty
-        print("tried sucking")
         if self.get_environment().accept_action(self, "suck"):
             self.get_environment().clean_dirt(self.position)
             self.add_point()
@@ -238,7 +233,6 @@ class Agent:
 
     def think(self):
         # Thinks of what the next move is gonna be, if the current position is dirty, it sucks if not it moves in a random direction
-        print("thought")
         self.subtract_life()
 
         if self.perspective():
@@ -276,7 +270,6 @@ class Agent:
     def update_position(self, position : Vector2):
         # Updates the agent position with the position given
         self.position = position
-        print("new position: x", position.x + 1, "y", position.y + 1)
 
     # Setters
     def set_environment(self, environment: Environment):
@@ -286,7 +279,6 @@ class Agent:
         # Sets a random position for the agent
         self.position.x = randint(0, environment_size.x - 1)
         self.position.y = randint(0, environment_size.y - 1)
-        print("x:", self.position.x+1, "y:", self.position.y+1)
 
     def set_lives(self, lives: int):
         self.lives = lives
