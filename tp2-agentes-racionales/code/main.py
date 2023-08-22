@@ -25,21 +25,23 @@ class Interface:
                 self.environment.print_environment()
                 while self.agent.is_alive() and self.environment.is_dirty():
                     self.agent.think()
-                    print("agent lives: ", self.agent.get_lives())
-                    print("environment total dirt: ", self.environment.get_total_dirt())
+                    print("points:", self.agent.get_points())
+                    print("agent used lives: ", 1000 - self.agent.get_lives())
+                    #print("environment total dirt: ", self.environment.get_total_dirt())
                     self.environment.print_environment()
 
             else:
 
                 for i in range(10):
-                    print("-------------------ATTEMPT ", i+1)
+                    print("--SIMULATION ", i+1)
                     self.create_new_environment_and_agent()
-                    print("agent lives: ", self.agent.get_lives())
+                    #print("agent lives: ", self.agent.get_lives())
                     while self.agent.is_alive() and self.environment.is_dirty():
                         self.agent.think()
-                    print("----------------simulation ended----------------")
-                    print("agent remaining lives: ", self.agent.get_lives())
-                    print("environment total dirt: ", self.environment.get_total_dirt())
+                    #print("----------------simulation ended----------------")
+                    print("points:", self.agent.get_points())
+                    print("agent used lives: ", 1000 - self.agent.get_lives())
+                    #print("environment total dirt: ", self.environment.get_total_dirt())
 
                 
 
@@ -149,5 +151,5 @@ class Interface:
         self.agent = agent
 
 main = Interface()
-print("Size:", main.get_size().x, "x", main.get_size().y)
-print("Dirt rate:", main.get_dirt_rate())
+#print("Size:", main.get_size().x, "x", main.get_size().y)
+#print("Dirt rate:", main.get_dirt_rate())

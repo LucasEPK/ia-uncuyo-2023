@@ -26,7 +26,7 @@ class Environment:
 
         numberOfTilesToFill = round(dirtPercentage * (self.size.x * self.size.y) / 100)
         self.set_total_dirt(numberOfTilesToFill)
-        print("total dirty tiles:", numberOfTilesToFill)
+        #print("total dirty tiles:", numberOfTilesToFill)
         while numberOfTilesToFill > 0:
             x = randint(0, self.size.x - 1)
             y = randint(0, self.size.y - 1)
@@ -295,3 +295,6 @@ class Agent:
     
     def get_lives(self):
         return self.lives
+    
+    def get_points(self) -> int:
+        return self.points
