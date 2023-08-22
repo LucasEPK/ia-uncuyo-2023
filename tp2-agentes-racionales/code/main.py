@@ -151,5 +151,6 @@ class Interface:
         self.agent = agent
 
 main = Interface()
-#print("Size:", main.get_size().x, "x", main.get_size().y)
-#print("Dirt rate:", main.get_dirt_rate())
+print("")
+print("Size:", main.get_size().x, "x", main.get_size().y)
+print("Dirt rate:", main.get_dirt_rate())
