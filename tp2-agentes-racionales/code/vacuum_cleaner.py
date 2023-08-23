@@ -240,6 +240,11 @@ class Agent:
         else:
             self.move_randomly()
     
+    def dont_think(self):
+        # Substracts a life and does a random action
+        self.subtract_life()
+        self.do_randomly()
+
     def move_randomly(self):
         # Makes the player move in a random direction
         move = randint(1, 4)
@@ -254,6 +259,24 @@ class Agent:
             case 4:
                 self.right()
     
+    def do_randomly(self):
+        # Does a random action, choosing between going up, down, left or right but also sucking, and idling
+        do = randint(1, 6)
+
+        match do:
+            case 1:
+                self.up()
+            case 2:
+                self.down()
+            case 3:
+                self.left()
+            case 4:
+                self.right()
+            case 5:
+                self.suck()
+            case 6:
+                self.idle()
+
     def is_alive(self) -> bool:
         # Returns true if the agent lives are more than 0 if not it returns false
         if self.get_lives() <= 0:

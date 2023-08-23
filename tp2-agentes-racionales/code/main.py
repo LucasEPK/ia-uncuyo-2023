@@ -7,6 +7,7 @@ class Interface:
 
     dirtRate = 0
     showType: bool = None # If true then the agent and environment is shown graphically, if false it repeats the environment with the same size and dirt rate 10 times and shows the stats
+    agentType: bool = None # if true agent type is reflexive if false it's random
     wantsToExit = False
     environment: Environment = None
     agent: Agent = None
@@ -24,7 +25,12 @@ class Interface:
                 print("agent lives: ", self.agent.get_lives())
                 self.environment.print_environment()
                 while self.agent.is_alive() and self.environment.is_dirty():
-                    self.agent.think()
+
+                    if self.agentType:
+                        self.agent.think()
+                    else:
+                        self.agent.dont_think()
+
                     print("points:", self.agent.get_points())
                     print("agent used lives: ", 1000 - self.agent.get_lives())
                     #print("environment total dirt: ", self.environment.get_total_dirt())
@@ -37,7 +43,12 @@ class Interface:
                     self.create_new_environment_and_agent()
                     #print("agent lives: ", self.agent.get_lives())
                     while self.agent.is_alive() and self.environment.is_dirty():
-                        self.agent.think()
+
+                        if self.agentType:
+                            self.agent.think()
+                        else:
+                            self.agent.dont_think()
+
                     #print("----------------simulation ended----------------")
                     print("points:", self.agent.get_points())
                     print("agent used lives: ", 1000 - self.agent.get_lives())
@@ -127,11 +138,35 @@ class Interface:
                 return
 
         system("cls")
+
+        print("===============MENU================")
+        print("Agent type")
+        print("1. Reflexive")
+        print("2. Random")
+        print("3. Exit")
+        option = int(input())
+
+        match option:
+            case 1:
+                self.agentType = True
+            case 2:
+                self.agentType = False
+            case 3:
+                self.wantsToExit = True
+                return
+
+        system("cls")
     
     def create_new_environment_and_agent(self):
         self.set_environment(Environment(self.get_size(), self.get_dirt_rate()))
         self.set_agent(Agent(self.get_environment()))
 
+    def is_random(self):
+        if self.agentType:
+            return False
+        else:
+            return True
+        
     def get_size(self) -> Vector2:
         return self.size
     
@@ -154,3 +189,4 @@ main = Interface()
 print("")
 print("Size:", main.get_size().x, "x", main.get_size().y)
 print("Dirt rate:", main.get_dirt_rate())
+print("random agent:", main.is_random())
