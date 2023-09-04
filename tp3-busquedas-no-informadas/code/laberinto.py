@@ -4,6 +4,9 @@ from f_matrices import *
 from linkedlist import add, LinkedList
 from graph_search_a import *
 import math, random
+from os import system
+
+system('color') # Esto activa el color en la consola de windows
 
 class Environment: #clase que configura la grilla, sus funciones y atributos
     def __init__(self, sizeX, sizeY, p_inicialX, p_inicialY, p_finalX, p_finalY, obstacle_rate): #atributos de la clase (obstacle_rate tiene que estar escrito no como porcentaje sino que como por ejemplo: 100%=1 50%=0.5)
@@ -240,7 +243,11 @@ def printSolution(solution, grilla, p_inicialY, p_inicialX): #funcion que imprim
         anteriorX= p_resultadoX
         currentNode = currentNode.nextNode
 
-def print_grilla(matriz): #imprime la grilla en pantalla
+def print_grilla(matriz): #imprime la grilla en pantalla con colores
+
+    GREEN = "\u001b[42m"
+    YELLOW = "\u001b[43m"
+    ENDC = "\u001b[0m"
 
     filas = len(matriz)
     for i in range(filas):
@@ -248,5 +255,12 @@ def print_grilla(matriz): #imprime la grilla en pantalla
         for j in range(columnas):
             if j == 0:
                 print(i, ":  ", end='')
-            print(matriz[i][j], end='')
+            
+            if matriz[i][j] == 2:
+                print(GREEN + str(matriz[i][j]) + ENDC, end='')
+            elif matriz[i][j] == 3:
+                print(YELLOW + str(matriz[i][j]) + ENDC, end='')
+            else:
+                print(matriz[i][j], end='')
+            
         print()
