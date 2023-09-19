@@ -1,20 +1,93 @@
-from f_matrices import *
-from laberinto import *
+from labyrinth import Environment, Agent
+from vectors import Vector2
+from random import randint
+from os import system
 
-p_inicialY = random.randint(0,99)
-p_inicialX = random.randint(0,99)
-p_finalY = random.randint(0,99)
-p_finalX = random.randint(0,99)
-obstacle_rate = 8/100
-mapa = Environment(100,100, p_inicialX, p_inicialY, p_finalX, p_finalY, obstacle_rate)
+class Interface:
 
-agent = Agent(mapa)
+    agentPos = Vector2()
+    size = Vector2() # Size of the environment we want
 
-think = agent.solve_by_bfs(mapa)
-print("Arriba resuelto por bfs")
+    obstacleRate = 0
+    showType: bool = None # If true then the agent and environment is shown graphically, if false it repeats the environment with the same size and obstacle rate 10 times and shows the stats
+    wantsToExit = False
+    environment: Environment = None
+    agent: Agent = None
 
-think = agent.solve_by_US(mapa)
-print("Arriba resuelto por us")
 
-think = agent.solve_by_dfsL(mapa)
-print("Arriba resuelto por dfs limitado")
+    def __init__(self):
+        self.set_obstacleRate(0.08)
+        self.set_size(100, 100)
+        self.set_agentPos(randint(0,99), randint(0, 99))
+        self.menu()
+        if not self.wantsToExit:
+        
+
+            if self.showType: # This means the user wants to see the agent and environment graphically
+                print("===== LEGEND: 0 = empty tile, 1 = obstacle tile, 2 = agent tile, 3 = goal tile =======\n")
+
+                self.create_new_environment_and_agent()
+                self.environment.print_environment()
+            else: # This means the user wants to repeat the algorithms 30 times and see the stats
+
+                for i in range(30):
+                    print("--SIMULATION ", i+1)
+                    self.create_new_environment_and_agent()
+                    
+
+    def menu(self):
+        print("==================== LABYRINTH LOCAL SEARCH =====================")
+        print("===============MENU================")
+        print("What do you want to see the AI do?")
+        print("1. Show environment and agent graphically")
+        print("2. Repeat 30 times and show stats")
+        print("3. Exit")
+        option = int(input())
+
+        match option:
+            case 1:
+                self.showType = True
+            case 2:
+                self.showType = False
+            case 3:
+                self.wantsToExit = True
+                return
+
+        system("cls")
+    
+    def create_new_environment_and_agent(self):
+        self.set_environment(Environment(self.get_size(), self.get_obstacleRate()))
+        self.set_agent(Agent(self.get_environment()))
+    
+    # GETTERS
+    def get_size(self) -> Vector2:
+        return self.size
+    
+    def get_obstacleRate(self) -> float:
+        return self.obstacleRate
+    
+    def get_environment(self):
+        return self.environment
+    
+    def get_agent(self):
+        return self.agent
+    
+    # SETTERS
+    def set_environment(self, environment):
+        self.environment = environment
+    
+    def set_agent(self, agent):
+        self.agent = agent
+    
+    def set_obstacleRate(self, obstacleRate):
+        self.obstacleRate = obstacleRate
+    
+    def set_size(self, y, x):
+        self.size.x = x
+        self.size.y = y
+
+    def set_agentPos(self, y, x):
+        self.agentPos.x = x
+        self.agentPos.y = y
+
+main = Interface()
