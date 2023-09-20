@@ -1,5 +1,6 @@
 # This module implements an environment and an agent for the labyrinth environment
 import matrices
+from nodes import Node
 from vectors import Vector2
 from random import randint
 from os import system
@@ -10,6 +11,8 @@ class Environment:
     space = None
     size = Vector2()
     total_obstacle: int = None
+    goalPos = Vector2()
+    agentPos = Vector2() 
     EMPTY_TILE = "0"
     OBSTACLE_TILE = "1"
     AGENT_TILE = "2"
@@ -36,6 +39,7 @@ class Environment:
             y = randint(0, self.size.y - 1)
 
             if space[y][x] == self.EMPTY_TILE:
+                self.set_goalPos(y, x)
                 space[y][x] = self.OBSTACLE_TILE
                 numberOfTilesToFill -= 1
 
@@ -51,66 +55,6 @@ class Environment:
             if space[y][x] == self.EMPTY_TILE:
                 repeat = False
                 space[y][x] = self.GOAL_TILE
-        
-    
-    def move_agent(self, agent, movement: str):
-        # Moves the specified agent according to the movement given
-        # All of the ifs are to make sure the correct tile is visualized, for example if the agent moves right and the tile it left was dirty, it should stay dirty, and the next tile be the agent or the agent with dirt depending on what it was before
-        space = self.get_space()
-
-        if space[agent.get_position().y][agent.get_position().x] == self.AGENT_TILE:
-            space[agent.get_position().y][agent.get_position().x] = self.EMPTY_TILE
-        else:
-            space[agent.get_position().y][agent.get_position().x] = self.OBSTACLE_TILE
-
-        match movement:
-            case "up":
-
-                if space[agent.get_position().y - 1][agent.get_position().x] == self.EMPTY_TILE:
-                    space[agent.get_position().y - 1][agent.get_position().x] = self.AGENT_TILE
-                else:
-                    space[agent.get_position().y - 1][agent.get_position().x] = self.AGENT_WITH_DIRT_SPACE
-
-                newPosition = Vector2()
-                newPosition.x = agent.get_position().x
-                newPosition.y = agent.get_position().y - 1
-                agent.update_position(newPosition)
-
-            case "down":
-
-                if space[agent.get_position().y + 1][agent.get_position().x] == self.EMPTY_TILE:
-                    space[agent.get_position().y + 1][agent.get_position().x] = self.AGENT_TILE
-                else:
-                    space[agent.get_position().y + 1][agent.get_position().x] = self.AGENT_WITH_DIRT_SPACE
-                
-                newPosition = Vector2()
-                newPosition.x = agent.get_position().x
-                newPosition.y = agent.get_position().y + 1
-                agent.update_position(newPosition)
-
-            case "left":
-
-                if space[agent.get_position().y][agent.get_position().x - 1] == self.EMPTY_TILE:
-                    space[agent.get_position().y][agent.get_position().x - 1] = self.AGENT_TILE
-                else:
-                    space[agent.get_position().y][agent.get_position().x - 1] = self.AGENT_WITH_DIRT_SPACE
-
-                newPosition = Vector2()
-                newPosition.x = agent.get_position().x - 1
-                newPosition.y = agent.get_position().y
-                agent.update_position(newPosition)
-
-            case "right":
-
-                if space[agent.get_position().y][agent.get_position().x + 1] == self.EMPTY_TILE:
-                    space[agent.get_position().y][agent.get_position().x + 1] = self.AGENT_TILE
-                else:
-                    space[agent.get_position().y][agent.get_position().x + 1] = self.AGENT_WITH_DIRT_SPACE
-                
-                newPosition = Vector2()
-                newPosition.x = agent.get_position().x + 1
-                newPosition.y = agent.get_position().y
-                agent.update_position(newPosition)
 
     def accept_agent_pos(self, y, x):
         # Checks if the position given isn't already occopied
@@ -127,6 +71,7 @@ class Environment:
         y = agent.get_position().y
         space = self.get_space()
 
+        self.set_agentPos(y, x)
         space[y][x] = self.AGENT_TILE
 
     def accept_action(self, agent, action: str):
@@ -155,6 +100,15 @@ class Environment:
                 else:
                     return True
 
+    def goal_test(self, pos : Vector2):
+        # Checks if the given position is the same as the goal position
+        goalPos = self.get_goalPos
+
+        if pos.x == goalPos.x and pos.y == goalPos.y:
+            return True
+        else:
+            return False
+
     def print_environment(self):
         # Prints the space matrix with colors
         GREEN = "\u001b[42m"
@@ -179,19 +133,35 @@ class Environment:
                 
             print()
 
-    # Setters
-    def set_size(self, x: int, y: int):
+    # SETTERS
+    def set_size(self, y: int, x: int):
         # Sets the size of the environment
         self.size.x = x
         self.size.y = y
 
+    def set_goalPos(self, y: int, x: int):
+        # Sets the goalPos of the environment
+        self.goalPos.x = x
+        self.goalPos.y = y
+
+    def set_agentPos(self, y: int, x: int):
+        # Sets the agentPos of the environment
+        self.agentPos.x = x
+        self.agentPos.y = y
+
     def set_total_obstacle(self, total_obstacle: int):
         self.total_obstacle = total_obstacle
     
-    # Getters
+    # GETTERS
     def get_size(self) -> Vector2:
         return self.size
     
+    def get_goalPos(self):
+        return self.goalPos
+    
+    def get_agentPos(self):
+        return self.agentPos
+
     def get_space(self):
         return self.space
     
@@ -232,56 +202,12 @@ class Agent:
         # Goes right in the environment
         if self.get_environment().accept_action(self, "right"):
             self.get_environment().move_agent(self, "right")
-        
-    def think(self):
-        # Thinks of what the next move is gonna be, if the current position is dirty, it sucks if not it moves in a random direction
-        self.subtract_life()
 
-        if self.perspective():
-            self.suck()
-        else:
-            self.move_randomly()
-    
-    def dont_think(self):
-        # Substracts a life and does a random action
-        self.subtract_life()
-        self.do_randomly()
-
-    def move_randomly(self):
-        # Makes the player move in a random direction
-        move = randint(1, 4)
-
-        match move:
-            case 1:
-                self.up()
-            case 2:
-                self.down()
-            case 3:
-                self.left()
-            case 4:
-                self.right()
-    
-    def do_randomly(self):
-        # Does a random action, choosing between going up, down, left or right but also sucking, and idling
-        do = randint(1, 6)
-
-        match do:
-            case 1:
-                self.up()
-            case 2:
-                self.down()
-            case 3:
-                self.left()
-            case 4:
-                self.right()
-            case 5:
-                self.suck()
-            case 6:
-                self.idle() 
-    
-    def update_position(self, position : Vector2):
-        # Updates the agent position with the position given
-        self.position = position
+    def solve_by_bfs(self):
+        environment = self.get_environment()
+        node = Node(self.position, 0)
+        if environment.goal_test(node.get_state()):
+            pass
 
     # Setters
     def set_environment(self, environment: Environment):
