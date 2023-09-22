@@ -19,7 +19,7 @@ class Interface:
     def __init__(self):
         self.set_obstacleRate(0.08)
         self.set_size(100, 100)
-        self.set_agentPos(randint(0,99), randint(0, 99))
+        self.set_agentPos(randint(0, 99), randint(0, 99))
         self.menu()
         if not self.wantsToExit:
         
@@ -30,9 +30,18 @@ class Interface:
                 self.create_new_environment_and_agent()
                 self.environment.print_environment()
                 agent = self.get_agent()
-                solutionBFS = agent.solve_by_bfs()
-                print("Solved with BFS: ")
+                solutionBFS, nodesExploredBFS = agent.solve_by_bfs()
+                solutionDFS, nodesExploredDFS = agent.solve_by_dfs()
+                print("============================ Solved with BFS ===============================")
+                print("Steps:")
                 print(solutionBFS[:])
+                print("Nodes explored:")
+                print(nodesExploredBFS)
+                print("============================ Solved with DFS ===============================")
+                print("Steps:")
+                print(solutionDFS[:])
+                print("Nodes explored:")
+                print(nodesExploredDFS)
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
 
                 for i in range(30):
