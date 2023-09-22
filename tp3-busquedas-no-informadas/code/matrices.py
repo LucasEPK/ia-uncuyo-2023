@@ -1,4 +1,5 @@
 # Module to create and show matrices easily
+from math import ceil
 
 def create_matrix(rows, columns): 
     # Creates an empty matrix with the rows and columns specified and returns it
@@ -40,3 +41,11 @@ def fill_matrix(matrix, filler):
         for j in range(columns):
             matrix[i][j]= filler
             
+def position_by_counting(posY: int, posX : int, matrixSizeX : int) -> int:
+    # Returns an encoding of a position of a matrix, to understand this encoding 1=(y=0,x=0), 2=(y=0, x=1) and so on, basically instead of x and y the position is given by counting from 1 to matrixSizeX*matrixSizeY counting from left to right and from up to down.
+    return (posX+1) + posY * matrixSizeX
+
+def position_by_coordinates(posNumber : int, matrixSizeX : int):
+    y = ceil(posNumber / matrixSizeX)-1
+    x = (posNumber - matrixSizeX * y)-1
+    return y, x

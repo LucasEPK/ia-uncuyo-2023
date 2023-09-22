@@ -54,6 +54,7 @@ class Environment:
 
             if space[y][x] == self.EMPTY_TILE:
                 repeat = False
+                self.set_goalPos(y, x)
                 space[y][x] = self.GOAL_TILE
 
     def accept_agent_pos(self, y, x):
@@ -73,36 +74,29 @@ class Environment:
 
         self.set_agentPos(y, x)
         space[y][x] = self.AGENT_TILE
+    
+    def actions(self, pos : Vector2):
+        # Returns a string list with the actions that are possible from a position
+        y = pos.y
+        x = pos.x
+        space = self.get_space()
+        spaceSize = self.get_size()
+        actions = []
 
-    def accept_action(self, agent, action: str):
-        # Checks if the action given is valid to take with the agent given
-        agentPos = agent.get_position()
-        spaceSize = self.size()
-        match action:
-            case "up":
-                if agentPos.y == 0:
-                    return False
-                else:
-                    return True
-            case "down":
-                if agentPos.y == spaceSize.y - 1:
-                    return False
-                else:
-                    return True
-            case "left":
-                if agentPos.x == 0:
-                    return False
-                else:
-                    return True
-            case "right":
-                if agentPos.x == spaceSize.x - 1:
-                    return False
-                else:
-                    return True
+        if y != 0 and space[y-1][x] != self.OBSTACLE_TILE:
+            actions.append("up")
+        if y != spaceSize.y - 1 and space[y+1][x] != self.OBSTACLE_TILE:
+            actions.append("down")
+        if x != 0 and space[y][x-1] != self.OBSTACLE_TILE:
+            actions.append("left")
+        if x != spaceSize.x - 1 and space[y][x+1] != self.OBSTACLE_TILE:
+            actions.append("right")
+        
+        return actions
 
-    def goal_test(self, pos : Vector2):
+    def goal_test(self, pos : Vector2) -> bool:
         # Checks if the given position is the same as the goal position
-        goalPos = self.get_goalPos
+        goalPos = self.get_goalPos()
 
         if pos.x == goalPos.x and pos.y == goalPos.y:
             return True
@@ -181,33 +175,95 @@ class Agent:
         self.set_environment(environment)
         self.set_random_position(environment.size)
         environment.add_agent(self)
-    
-    def up(self):
-        # Goes up in the environment
-        if self.get_environment().accept_action(self, "up"):
-            self.get_environment().move_agent(self, "up")
-            
-
-    def down(self):
-        # Goes down in the environment
-        if self.get_environment().accept_action(self, "down"):
-            self.get_environment().move_agent(self, "down")
-
-    def left(self):
-        # Goes left in the environment
-        if self.get_environment().accept_action(self, "left"):
-            self.get_environment().move_agent(self, "left")
-
-    def right(self):
-        # Goes right in the environment
-        if self.get_environment().accept_action(self, "right"):
-            self.get_environment().move_agent(self, "right")
 
     def solve_by_bfs(self):
+        # Solves the labyrinth using bfs algorithm and returns the solution as a list of actions (strings)
+
         environment = self.get_environment()
-        node = Node(self.position, 0)
-        if environment.goal_test(node.get_state()):
-            pass
+        environmentSize = environment.get_size()
+        agentPos = self.get_position()
+        state = matrices.position_by_counting(agentPos.y, agentPos.x, environmentSize.x)
+        node = Node(state, 0)
+
+        nodePos = Vector2()
+        nodePos.y, nodePos.x = matrices.position_by_coordinates(node.get_state(), environmentSize.x)
+        if environment.goal_test(nodePos):
+            print("solution found")
+            return self.solution(node)
+        
+        frontier = [node]
+        explored = set()
+        while len(frontier) > 0:
+            node = frontier.pop(0)
+            
+            explored.add(node.get_state())
+
+            nodePos = Vector2()
+            nodePos.y, nodePos.x = matrices.position_by_coordinates(node.get_state(), environmentSize.x)
+
+            for action in environment.actions(nodePos):
+                child = self.child_node(node, action)
+                if not child.get_state() in explored and not self.is_in_frontier(child, frontier):
+                    y, x = matrices.position_by_coordinates(child.get_state(), environmentSize.x)
+                    childPos = Vector2(y, x)
+                    if environment.goal_test(childPos):
+                        return self.solution(child)
+                    
+                    frontier.append(child)
+
+        return None
+
+
+    def child_node(self, node : Node, action) -> Node:
+        environment = self.get_environment()
+        environmentSize = environment.get_size()
+
+        newNode = Node()
+        match action:
+            case "up":
+                newNode.set_state(node.get_state() - (environmentSize.x))
+                newNode.set_parent(node)
+                newNode.set_action(action)
+                newNode.set_pathCost(node.get_pathCost()+1)
+            case "down":
+                newNode.set_state(node.get_state() + (environmentSize.x))
+                newNode.set_parent(node)
+                newNode.set_action(action)
+                newNode.set_pathCost(node.get_pathCost()+1)
+            case "left":
+                newNode.set_state(node.get_state() - 1)
+                newNode.set_parent(node)
+                newNode.set_action(action)
+                newNode.set_pathCost(node.get_pathCost()+1)
+            case "right":
+                newNode.set_state(node.get_state() + 1)
+                newNode.set_parent(node)
+                newNode.set_action(action)
+                newNode.set_pathCost(node.get_pathCost()+1)
+            case _:
+                return None
+        
+        return newNode
+    
+    def is_in_frontier(self, node : Node, frontier) -> bool:
+        # This function returns true if the node is in the given frontier, if not returns false
+
+        for i in range(0, len(frontier)):
+            if node.get_state() == frontier[i].get_state():
+                return True
+            
+        return False
+    
+    def solution(self, node : Node):
+        # This function returns the actions made to reach the given node in a list
+        currentNode = node
+        solution = []
+
+        while currentNode.get_parent() != None:
+            solution.insert(0, currentNode.get_action())
+            currentNode = currentNode.get_parent()
+        
+        return solution
 
     # Setters
     def set_environment(self, environment: Environment):

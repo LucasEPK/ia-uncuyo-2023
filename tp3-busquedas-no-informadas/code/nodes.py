@@ -4,9 +4,11 @@ class Node:
     action = ""
     pathCost = 0
 
-    def __init__(self, initialState, pathCost) -> None:
-        self.set_state(initialState)
-        self.set_pathCost(pathCost)
+    def __init__(self, initialState=None, pathCost=None) -> None:
+        if initialState != None:
+            self.set_state(initialState)
+        if pathCost != None:
+            self.set_pathCost(pathCost)
 
     # SETTERS
     def set_state(self, state):

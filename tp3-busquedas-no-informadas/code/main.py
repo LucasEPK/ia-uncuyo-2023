@@ -2,6 +2,7 @@ from labyrinth import Environment, Agent
 from vectors import Vector2
 from random import randint
 from os import system
+import matrices
 
 class Interface:
 
@@ -28,12 +29,15 @@ class Interface:
 
                 self.create_new_environment_and_agent()
                 self.environment.print_environment()
+                agent = self.get_agent()
+                solutionBFS = agent.solve_by_bfs()
+                print("Solved with BFS: ")
+                print(solutionBFS[:])
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
 
                 for i in range(30):
                     print("--SIMULATION ", i+1)
                     self.create_new_environment_and_agent()
-                    
 
     def menu(self):
         print("==================== LABYRINTH LOCAL SEARCH =====================")
