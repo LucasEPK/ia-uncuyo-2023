@@ -54,6 +54,13 @@ class Interface:
                     print("Solution not found before limit")
                 print("Nodes explored:")
                 print(nodesExploredDLS)
+
+                print("============================ Solved with UCS ===============================")
+                solutionUCS, nodesExploredUCS = agent.solve_by_ucs()
+                print("Steps:")
+                print(solutionUCS[:])
+                print("Nodes explored:")
+                print(nodesExploredUCS)
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
 
                 for i in range(30):

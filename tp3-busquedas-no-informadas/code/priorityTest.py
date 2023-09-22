@@ -16,6 +16,7 @@ queue.enqueue(element4)
 queue.enqueue(element3)
 
 queue.print_queue()
+print(queue.length())
 
 print(queue.dequeue().get_value())
 

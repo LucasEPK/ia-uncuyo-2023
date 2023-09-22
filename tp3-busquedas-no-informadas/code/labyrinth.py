@@ -1,5 +1,6 @@
 # This module implements an environment and an agent for the labyrinth environment
 import matrices
+import priorityQueue
 from nodes import Node
 from vectors import Vector2
 from random import randint
@@ -284,39 +285,41 @@ class Agent:
 
         return None, len(explored)
     
-    def solve_by_ucs(self): not finished
+    def solve_by_ucs(self):
         # Solves the labyrinth using uniform cost search algorithm and returns the solution as a list of actions (strings)
 
         environment = self.get_environment()
         environmentSize = environment.get_size()
         agentPos = self.get_position()
-        state = matrices.position_by_counting(agentPos.y, agentPos.x, environmentSize.x)
-        node = Node(state, 0)
-
-        nodePos = Vector2()
-        nodePos.y, nodePos.x = matrices.position_by_coordinates(node.get_state(), environmentSize.x)
-        if environment.goal_test(nodePos):
-            return self.solution(node), 1
         
-        frontier = [node]
+        state = matrices.position_by_counting(agentPos.y, agentPos.x, environmentSize.x)
+        
+        node = Node(state, 0)
+        frontier = priorityQueue.PriorityQueue()
+        element = priorityQueue.PriorityQueueElement(node, 1)
+        frontier.enqueue(element)
         explored = set()
-        while len(frontier) > 0:
-            node = frontier.pop(0)
-            
-            explored.add(node.get_state())
 
+        while frontier.length() > 0:
+            node = frontier.dequeue().get_value()
+            
             nodePos = Vector2()
             nodePos.y, nodePos.x = matrices.position_by_coordinates(node.get_state(), environmentSize.x)
 
+            if environment.goal_test(nodePos):
+                return self.solution(node), len(explored)
+            
+            explored.add(node.get_state())
+
             for action in environment.actions(nodePos):
                 child = self.child_node(node, action)
-                if not child.get_state() in explored and not self.is_in_frontier(child, frontier):
-                    y, x = matrices.position_by_coordinates(child.get_state(), environmentSize.x)
-                    childPos = Vector2(y, x)
-                    if environment.goal_test(childPos):
-                        return self.solution(child), len(explored)
-                    
-                    frontier.append(child)
+                element1 = priorityQueue.PriorityQueueElement(child, 1)
+                is_in_frontier = self.is_in_frontierPQ(child, frontier)
+                if not child.get_state() in explored and not is_in_frontier:
+                    frontier.enqueue(element1)
+                elif is_in_frontier:
+                    self.is_in_frontier_with_higher_cost(element1, frontier)
+
 
         return None, len(explored)
 
@@ -359,6 +362,27 @@ class Agent:
                 return True
             
         return False
+    
+    def is_in_frontierPQ(self, node : Node, frontier : priorityQueue.PriorityQueue) -> bool:
+        # This function returns true if the node is in the given frontier, if not returns false (Priority Queue version)
+
+        queue = frontier.get_queue()
+        for i in range(0, frontier.length()):
+            if node.get_state() == queue[i].get_value().get_state():
+                return True
+            
+        return False
+    
+    def is_in_frontier_with_higher_cost(self, element : priorityQueue.PriorityQueueElement, frontier : priorityQueue.PriorityQueue):
+        # this function checks if the element is in the frontier with a higher cost, if it is we replace the element in the frontier with the new element with lower cost
+
+        queue = frontier.get_queue()
+        for i in range(0, frontier.length()):
+            if element.get_value().get_state() == queue[i].get_value().get_state():
+                if element.get_priority() < queue[i].get_priority():
+                    queue[i] = element
+                    break
+            
     
     def solution(self, node : Node):
         # This function returns the actions made to reach the given node in a list

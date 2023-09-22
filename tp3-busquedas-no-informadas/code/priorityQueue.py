@@ -26,6 +26,9 @@ class PriorityQueueElement:
 class PriorityQueue:
     queue = []
 
+    def length(self):
+        return len(self.get_queue())
+
     def enqueue(self, element : PriorityQueueElement):
         queue = self.get_queue()
         elementPriority = element.get_priority()
@@ -34,7 +37,7 @@ class PriorityQueue:
             queue.append(element)
         else:
             for i in range(0, len(queue)):
-                if elementPriority >= queue[i].get_priority():
+                if elementPriority > queue[i].get_priority():
                     queue.insert(i, element)
                     break
 
