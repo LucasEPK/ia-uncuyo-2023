@@ -210,7 +210,7 @@ class Agent:
                     
                     frontier.append(child)
 
-        return None
+        return None, len(explored)
 
     def solve_by_dfs(self):
         # Solves the labyrinth using dfs algorithm and returns the solution as a list of actions (strings), it's the same as bfs but with a lifo queue
@@ -246,7 +246,43 @@ class Agent:
                     
                     frontier.append(child)
 
-        return None
+        return None, len(explored)
+    
+    def solve_by_dls(self, limit):
+        # Solves the labyrinth using dls algorithm and returns the solution as a list of actions (strings), it's the same as dfs but with a limit on the length of the explored set, once the limit is reached the algorithm stops searching
+
+        environment = self.get_environment()
+        environmentSize = environment.get_size()
+        agentPos = self.get_position()
+        state = matrices.position_by_counting(agentPos.y, agentPos.x, environmentSize.x)
+        node = Node(state, 0)
+
+        nodePos = Vector2()
+        nodePos.y, nodePos.x = matrices.position_by_coordinates(node.get_state(), environmentSize.x)
+        if environment.goal_test(nodePos):
+            return self.solution(node), 1
+        
+        frontier = [node]
+        explored = set()
+        while len(frontier) > 0 and len(explored) < limit:
+            node = frontier.pop()
+            
+            explored.add(node.get_state())
+
+            nodePos = Vector2()
+            nodePos.y, nodePos.x = matrices.position_by_coordinates(node.get_state(), environmentSize.x)
+
+            for action in environment.actions(nodePos):
+                child = self.child_node(node, action)
+                if not child.get_state() in explored and not self.is_in_frontier(child, frontier):
+                    y, x = matrices.position_by_coordinates(child.get_state(), environmentSize.x)
+                    childPos = Vector2(y, x)
+                    if environment.goal_test(childPos):
+                        return self.solution(child), len(explored)
+                    
+                    frontier.append(child)
+
+        return None, len(explored)
 
     def child_node(self, node : Node, action) -> Node:
         environment = self.get_environment()

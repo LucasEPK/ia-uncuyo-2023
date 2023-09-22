@@ -2,7 +2,6 @@ from labyrinth import Environment, Agent
 from vectors import Vector2
 from random import randint
 from os import system
-import matrices
 
 class Interface:
 
@@ -30,18 +29,31 @@ class Interface:
                 self.create_new_environment_and_agent()
                 self.environment.print_environment()
                 agent = self.get_agent()
-                solutionBFS, nodesExploredBFS = agent.solve_by_bfs()
-                solutionDFS, nodesExploredDFS = agent.solve_by_dfs()
+                size = self.get_size()
+
                 print("============================ Solved with BFS ===============================")
+                solutionBFS, nodesExploredBFS = agent.solve_by_bfs()
                 print("Steps:")
                 print(solutionBFS[:])
                 print("Nodes explored:")
                 print(nodesExploredBFS)
+
                 print("============================ Solved with DFS ===============================")
+                solutionDFS, nodesExploredDFS = agent.solve_by_dfs()
                 print("Steps:")
                 print(solutionDFS[:])
                 print("Nodes explored:")
                 print(nodesExploredDFS)
+
+                print("============================ Solved with DLS ===============================")
+                solutionDLS, nodesExploredDLS = agent.solve_by_dls(round((size.x*size.y)/2)) # I chose the limit to be half of the matrix
+                print("Steps:")
+                if solutionDLS != None:
+                    print(solutionDLS[:])
+                else:
+                    print("Solution not found before limit")
+                print("Nodes explored:")
+                print(nodesExploredDLS)
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
 
                 for i in range(30):
