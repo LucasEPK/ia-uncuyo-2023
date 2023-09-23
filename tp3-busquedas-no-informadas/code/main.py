@@ -2,6 +2,7 @@ from labyrinth import Environment, Agent
 from vectors import Vector2
 from random import randint
 from os import system
+import csv
 
 class Interface:
 
@@ -62,7 +63,8 @@ class Interface:
                 print("Nodes explored:")
                 print(nodesExploredUCS)
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
-
+                csvHeader = ['algorithm_name', 'run_n', 'explored_states', 'solution_found']
+                csvDataList = []
                 for i in range(30):
                     print("=============== EXECUTION ", i+1)
 
@@ -74,30 +76,45 @@ class Interface:
                     solutionBFS, nodesExploredBFS = agent.solve_by_bfs()
                     print("Nodes explored:")
                     print(nodesExploredBFS)
+                    solutionFound = len(solutionBFS) != 0
+                    csvData = ['BFS', (i+1), nodesExploredBFS, solutionFound]
+                    csvDataList.append(csvData)
 
                     print("============================ Solved with DFS ===============================")
                     solutionDFS, nodesExploredDFS = agent.solve_by_dfs()
                     print("Nodes explored:")
                     print(nodesExploredDFS)
+                    solutionFound = len(solutionDFS) != 0
+                    csvData = ['DFS', (i+1), nodesExploredDFS, solutionFound]
+                    csvDataList.append(csvData)
 
                     print("============================ Solved with DLS ===============================")
                     solutionDLS, nodesExploredDLS = agent.solve_by_dls(round((size.x*size.y)/2)) # I chose the limit to be half of the matrix
+                    solutionFound = True
                     if solutionDLS == None:
                         print("Solution not found before limit")
+                        solutionFound = False
                     print("Nodes explored:")
                     print(nodesExploredDLS)
+                    csvData = ['DLS', (i+1), nodesExploredDLS, solutionFound]
+                    csvDataList.append(csvData)
 
                     print("============================ Solved with UCS ===============================")
                     solutionUCS, nodesExploredUCS = agent.solve_by_ucs()
                     print("Nodes explored:")
                     print(nodesExploredUCS)
+                    solutionFound = len(solutionUCS) != 0
+                    csvData = ['UCS', (i+1), nodesExploredUCS, solutionFound]
+                    csvDataList.append(csvData)
+                
+                self.write_csv(csvHeader, csvDataList)
 
     def menu(self):
         print("==================== LABYRINTH LOCAL SEARCH =====================")
         print("===============MENU================")
         print("What do you want to see the AI do?")
         print("1. Show environment and agent graphically")
-        print("2. Repeat 30 times and show stats")
+        print("2. Repeat 30 times, show stats and write csv")
         print("3. Exit")
         option = int(input())
 
@@ -115,6 +132,16 @@ class Interface:
     def create_new_environment_and_agent(self):
         self.set_environment(Environment(self.get_size(), self.get_obstacleRate()))
         self.set_agent(Agent(self.get_environment()))
+
+    def write_csv(self, header, data):
+        path = 'C:/Users/Lucas Estudio/Documents/Universidad/2023 2ndo semestre/Inteligencia_Artificial_1/ia-uncuyo-2023/tp3-busquedas-no-informadas/no-informada-results.csv'
+        
+        with open(path, 'w', newline='') as csvFile:
+            writer = csv.writer(csvFile)
+
+            writer.writerow(header)
+
+            writer.writerows(data)
     
     # GETTERS
     def get_size(self) -> Vector2:
