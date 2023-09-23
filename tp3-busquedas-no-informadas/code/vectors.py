@@ -1,3 +1,4 @@
+# Implements a class with 2 elements an x and a y used to store a position in 1 object
 class Vector2:
     x = None
     y = None

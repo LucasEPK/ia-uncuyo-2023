@@ -1,3 +1,4 @@
+# This module connects all the other modules to execute in conjunction, it creates an environment and an agent to solve a maze with different search algorithms
 from labyrinth import Environment, Agent
 from vectors import Vector2
 from random import randint
@@ -17,6 +18,7 @@ class Interface:
 
 
     def __init__(self):
+        # Initilialize the program
         self.set_obstacleRate(0.08)
         self.set_size(100, 100)
         self.set_agentPos(randint(0, 99), randint(0, 99))
@@ -134,6 +136,7 @@ class Interface:
         self.set_agent(Agent(self.get_environment()))
 
     def write_csv(self, header, data):
+        # Writes a csv in the path below with the header and data specified (they are lists)
         path = 'C:/Users/Lucas Estudio/Documents/Universidad/2023 2ndo semestre/Inteligencia_Artificial_1/ia-uncuyo-2023/tp3-busquedas-no-informadas/no-informada-results.csv'
         
         with open(path, 'w', newline='') as csvFile:

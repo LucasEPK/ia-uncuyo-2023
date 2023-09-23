@@ -1,3 +1,4 @@
+# Node class to act as a graph
 class Node:
     state = None
     parent = None

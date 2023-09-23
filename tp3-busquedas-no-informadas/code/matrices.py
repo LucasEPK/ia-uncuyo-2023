@@ -1,4 +1,4 @@
-# Module to create and show matrices easily
+# Module to create and show matrices easily and also some encoding
 from math import ceil
 
 def create_matrix(rows, columns): 
@@ -46,6 +46,7 @@ def position_by_counting(posY: int, posX : int, matrixSizeX : int) -> int:
     return (posX+1) + posY * matrixSizeX
 
 def position_by_coordinates(posNumber : int, matrixSizeX : int):
+    # Returns an x and y, this is done reversing the encoding done by position_by_counting
     y = ceil(posNumber / matrixSizeX)-1
     x = (posNumber - matrixSizeX * y)-1
     return y, x

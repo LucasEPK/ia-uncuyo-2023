@@ -324,6 +324,7 @@ class Agent:
         return None, len(explored)
 
     def child_node(self, node : Node, action) -> Node:
+        # Creates a child node from a node and an action
         environment = self.get_environment()
         environmentSize = environment.get_size()
 

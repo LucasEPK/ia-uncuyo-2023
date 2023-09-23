@@ -33,7 +33,7 @@ class PriorityQueue:
         queue = self.get_queue()
         elementPriority = element.get_priority()
 
-        if len(queue) == 0:
+        if len(queue) == 0: # There are no elements so no priority to compare
             queue.append(element)
         else:
             for i in range(0, len(queue)):
