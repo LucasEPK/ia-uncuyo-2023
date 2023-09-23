@@ -2,10 +2,11 @@
 ## Lucas moyano
 
 B) 
-![](img/Boxplots.PNG)
+![](img/Rplot.png)
 
-![](img/media_desviacion.PNG)
+| | BFS | DFS | DLS | UCS |
+|-|-|-|-|-|
+|Media|5068.9|3675.43|3149.67|4567.37|
+|Desviación|2505.05|2404.42|1700.77|2759.81|
 
-**Nota: en dfs limitado se excluyen los resultado en donde no llega a la solución por eso los estados explorados son menores**
-
-C) El algoritmo más adecuado para resolver este problema es el bfs ya que su media es más baja y llega siempre al resultado. Esto se debe a que bfs es optimal cuando todas las paths tienen el mismo costo, que es el caso de este problema
+C) El algoritmo más adecuado para resolver este problema es el BFS ya que es completo y optimo. Esto se debe a que BFS es optimal cuando todas las paths tienen el mismo costo, que es el caso de este problema.
