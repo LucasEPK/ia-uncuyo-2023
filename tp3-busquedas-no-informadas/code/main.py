@@ -64,8 +64,33 @@ class Interface:
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
 
                 for i in range(30):
-                    print("--SIMULATION ", i+1)
+                    print("=============== EXECUTION ", i+1)
+
                     self.create_new_environment_and_agent()
+                    agent = self.get_agent()
+                    size = self.get_size()
+
+                    print("============================ Solved with BFS ===============================")
+                    solutionBFS, nodesExploredBFS = agent.solve_by_bfs()
+                    print("Nodes explored:")
+                    print(nodesExploredBFS)
+
+                    print("============================ Solved with DFS ===============================")
+                    solutionDFS, nodesExploredDFS = agent.solve_by_dfs()
+                    print("Nodes explored:")
+                    print(nodesExploredDFS)
+
+                    print("============================ Solved with DLS ===============================")
+                    solutionDLS, nodesExploredDLS = agent.solve_by_dls(round((size.x*size.y)/2)) # I chose the limit to be half of the matrix
+                    if solutionDLS == None:
+                        print("Solution not found before limit")
+                    print("Nodes explored:")
+                    print(nodesExploredDLS)
+
+                    print("============================ Solved with UCS ===============================")
+                    solutionUCS, nodesExploredUCS = agent.solve_by_ucs()
+                    print("Nodes explored:")
+                    print(nodesExploredUCS)
 
     def menu(self):
         print("==================== LABYRINTH LOCAL SEARCH =====================")
