@@ -287,6 +287,7 @@ class Agent:
     
     def solve_by_ucs(self):
         # Solves the labyrinth using uniform cost search algorithm and returns the solution as a list of actions (strings)
+        # I think it's wrong that the priority is always 1 it should be the pathcost actually but idk
 
         environment = self.get_environment()
         environmentSize = environment.get_size()
@@ -322,6 +323,64 @@ class Agent:
 
 
         return None, len(explored)
+    
+    def solve_by_Astar(self):
+        # Solves the labyrinth using A* algorithm and returns the solution as a list of actions (strings)
+
+        environment = self.get_environment()
+        environmentSize = environment.get_size()
+        agentPos = self.get_position()
+        
+        state = matrices.position_by_counting(agentPos.y, agentPos.x, environmentSize.x)
+        
+        node = Node(state, 0)
+        frontier = priorityQueue.PriorityQueue()
+        fn = self.f(node)
+        element = priorityQueue.PriorityQueueElement(node, fn)
+        frontier.reverse_enqueue(element)
+        explored = set()
+
+        while frontier.length() > 0:
+            node = frontier.dequeue().get_value()
+            
+            nodePos = Vector2()
+            nodePos.y, nodePos.x = matrices.position_by_coordinates(node.get_state(), environmentSize.x)
+
+            if environment.goal_test(nodePos):
+                return self.solution(node), len(explored)
+            
+            explored.add(node.get_state())
+
+            for action in environment.actions(nodePos):
+                child = self.child_node(node, action)
+                fn = self.f(child)
+                element1 = priorityQueue.PriorityQueueElement(child, fn)
+                is_in_frontier = self.is_in_frontierPQ(child, frontier)
+                if not child.get_state() in explored and not is_in_frontier:
+                    frontier.reverse_enqueue(element1)
+                elif is_in_frontier:
+                    self.is_in_frontier_with_higher_cost(element1, frontier)
+
+
+        return None, len(explored)
+    
+    def f(self, n : Node):
+        return self.g(n) + self.h(n)
+    
+    def g(self, n : Node):
+        return n.get_pathCost()
+
+    def h(self, n : Node):
+        # This is an implementation of the manhattan distance, basically we calculate the shortest path from the node to the goal without taking into account the obstacles
+        state = n.get_state()
+        environment = self.get_environment()
+        environmentSize = environment.get_size()
+        y, x = matrices.position_by_coordinates(state, environmentSize.x)
+        goalPos = environment.get_goalPos()
+        yDifference = abs(y - goalPos.y)
+        xDifference = abs(x - goalPos.x)
+
+        return yDifference + xDifference
 
     def child_node(self, node : Node, action) -> Node:
         # Creates a child node from a node and an action

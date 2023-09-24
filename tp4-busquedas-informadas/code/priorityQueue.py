@@ -1,4 +1,4 @@
-# This module increments a priority queue, the higher the priority the closest to the first position of the queue
+# This module increments a priority queue, the higher the priority the closest to the first position of the queue (there is also a function that reverses this)
 class PriorityQueueElement:
     value = None
     priority = None
@@ -42,6 +42,22 @@ class PriorityQueue:
                     break
 
                 if i == len(queue) - 1: # This is in case the element we are adding has the smallest priority of all the queue
+                    queue.append(element)
+
+    def reverse_enqueue(self, element : PriorityQueueElement):
+        # This enqueue puts the lowest priority at first in the queue
+        queue = self.get_queue()
+        elementPriority = element.get_priority()
+
+        if len(queue) == 0: # There are no elements so no priority to compare
+            queue.append(element)
+        else:
+            for i in range(0, len(queue)):
+                if elementPriority < queue[i].get_priority():
+                    queue.insert(i, element)
+                    break
+
+                if i == len(queue) - 1: # This is in case the element we are adding has the biggest priority of all the queue
                     queue.append(element)
     
     def dequeue(self):

@@ -64,6 +64,13 @@ class Interface:
                 print(solutionUCS[:])
                 print("Nodes explored:")
                 print(nodesExploredUCS)
+
+                print("============================ Solved with A* ===============================")
+                solutionAstar, nodesExploredAstar = agent.solve_by_Astar()
+                print("Steps:")
+                print(solutionAstar[:])
+                print("Nodes explored:")
+                print(nodesExploredAstar)
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
                 csvHeader = ['algorithm_name', 'run_n', 'explored_states', 'solution_found']
                 csvDataList = []
@@ -108,6 +115,14 @@ class Interface:
                     solutionFound = len(solutionUCS) != 0
                     csvData = ['UCS', (i+1), nodesExploredUCS, solutionFound]
                     csvDataList.append(csvData)
+
+                    print("============================ Solved with A* ===============================")
+                    solutionAstar, nodesExploredAstar = agent.solve_by_Astar()
+                    print("Nodes explored:")
+                    print(nodesExploredAstar)
+                    solutionFound = len(solutionAstar) != 0
+                    csvData = ['A*', (i+1), nodesExploredAstar, solutionFound]
+                    csvDataList.append(csvData)
                 
                 self.write_csv(csvHeader, csvDataList)
 
@@ -137,7 +152,7 @@ class Interface:
 
     def write_csv(self, header, data):
         # Writes a csv in the path below with the header and data specified (they are lists)
-        path = 'C:/Users/Lucas Estudio/Documents/Universidad/2023 2ndo semestre/Inteligencia_Artificial_1/ia-uncuyo-2023/tp3-busquedas-no-informadas/no-informada-results.csv'
+        path = 'C:/Users/Lucas Estudio/Documents/Universidad/2023 2ndo semestre/Inteligencia_Artificial_1/ia-uncuyo-2023/tp4-busquedas-informadas/informada-results.csv'
         
         with open(path, 'w', newline='') as csvFile:
             writer = csv.writer(csvFile)
