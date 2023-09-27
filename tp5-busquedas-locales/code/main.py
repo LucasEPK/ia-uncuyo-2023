@@ -5,7 +5,7 @@ from os import system
 import csv
 
 class Interface:
-    size = Vector2() # Size of the environment we want
+    size = 0 # Size of the environment we want
 
     showType: bool = None # If true then the agent and environment is shown graphically, if false it repeats the environment with the same size and obstacle rate 10 times and shows the stats
     wantsToExit = False
@@ -28,6 +28,9 @@ class Interface:
                 self.environment.print_environment()
                 agent = self.get_agent()
                 size = self.get_size()
+                chessBoard, steps = agent.solve_by_hillclimbing()
+                print(chessBoard[:])
+                print(steps)
 
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
                 csvHeader = ['algorithm_name', 'run_n', 'explored_states', 'solution_found']
@@ -72,7 +75,7 @@ class Interface:
             writer.writerows(data)
     
     # GETTERS
-    def get_size(self) -> Vector2:
+    def get_size(self) -> int:
         return self.size
     
     def get_environment(self):
@@ -88,8 +91,7 @@ class Interface:
     def set_agent(self, agent):
         self.agent = agent
     
-    def set_size(self, y, x):
-        self.size.x = x
-        self.size.y = y
+    def set_size(self, size):
+        self.size = size
 
 main = Interface()

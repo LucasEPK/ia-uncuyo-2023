@@ -14,7 +14,7 @@ class Environment:
         if chessBoard == None:
             self.set_random_chessBoard()
         else:
-            self.set_chessboard(chessBoard)
+            self.set_chessBoard(chessBoard)
     
     def h(self):
         # Heuristic function that counts the total number of pair of queens that are attacking eachother and returns it
@@ -78,25 +78,42 @@ class Agent:
     
     def solve_by_hillclimbing(self):
         current = self.make_node(self.get_environment())
+        maxSteps = self.get_environment().get_size() # This is because on average classic hillclimbing on 8 queens problem takes 4 steps if succeded and 3 if not, so we round it up to 8, which is the problem size
+        for i in range(0, maxSteps):
+            neighbor = self.choose_best_neighbor(current)
+            if neighbor.get_value() >= current.get_value():
+                if current.get_value() == 0:
+                    print("solution lol")
+                else:
+                    print("reached local minimum, h = ", current.get_value())
+                return current.get_state(), i+1
+            current = neighbor
+        print("maxSteps reached")
+        return current.get_state(), maxSteps
 
-    def make_node(self, environment : Environment):
+    def make_node(self, environment : Environment) -> Node:
         chessBoard = environment.get_chessBoard()
 
         node = Node()
         node.set_state(chessBoard)
         h = environment.h()
         node.set_value(h)
+        return node
 
     def choose_best_neighbor(self, node : Node):
-        chessBoard = node.get_state()
+        # Generates new chess boards moving only 1 queen in her column and calculates the heuristic for every possible movement, then chooses the movement with the lowest heuristic and returns it as a node
+        chessBoard = self.copy_chessBoard(node.get_state())
         chessBoardSize = len(chessBoard)
-        bestNeighbor = None
-        bestH = chessBoardSize*chessBoardSize # This is used to have a scalable bigger than the worst h possible
+        environment = Environment(chessBoardSize, chessBoard)
+        environmentH = environment.h()
+        bestNeighbor = environment
+
+        bestH = environmentH
 
         for j in range(0, chessBoardSize):
             for i in range(0, chessBoardSize):
                 if i != chessBoard[j]:
-                    newChessBoard = chessBoard
+                    newChessBoard = self.copy_chessBoard(chessBoard)
                     newChessBoard[j] = i
                     newEnvironment = Environment(chessBoardSize, newChessBoard)
                     newEnvironmentH = newEnvironment.h()
@@ -108,7 +125,12 @@ class Agent:
         neighborNode = Node(bestNeighbor.get_chessBoard(), bestH)
         return neighborNode
 
+    def copy_chessBoard(self, chessBoard):
+        copy = []
+        for i in range(0, len(chessBoard)):
+            copy.insert(i, chessBoard[i])
 
+        return copy
 
     # Setters
     def set_environment(self, initialEnvironment: Environment):
