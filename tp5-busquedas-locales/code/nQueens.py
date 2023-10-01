@@ -2,7 +2,8 @@
 import matrices
 from nodes import Node
 from vectors import Vector2
-from random import randint
+from random import randint, random
+import math
 
 class Environment:
     chessBoard = None
@@ -90,6 +91,32 @@ class Agent:
             current = neighbor
         print("maxSteps reached")
         return current.get_state(), maxSteps
+    
+    def solve_by_simulated_annealing(self):
+        current = self.make_node(self.get_environment())
+        maxTime = self.get_environment().get_size()*13 # 2 times the maximum steps of hill climbing
+        for time in range(0, maxTime):
+            temperature = self.schedule(time, maxTime)
+
+            if temperature == 0:
+                if current.get_value() == 0:
+                    print("solution")
+                else:
+                    print("best attempt:", current.get_value())
+                return current.get_state(), time
+            
+            neighbor = self.choose_random_neighbor(current)
+
+            evaluation = neighbor.get_value() - current.get_value()
+            if evaluation < 0:
+                current = neighbor
+            else:
+                probability = 1 / math.exp(-evaluation / temperature)
+                random_number = random()
+
+                if random_number < probability:
+                    current = neighbor
+
 
     def make_node(self, environment : Environment) -> Node:
         chessBoard = environment.get_chessBoard()
@@ -124,7 +151,30 @@ class Agent:
         
         neighborNode = Node(bestNeighbor.get_chessBoard(), bestH)
         return neighborNode
+    
+    def choose_random_neighbor(self, node : Node):
 
+        chessBoard = self.copy_chessBoard(node.get_state())
+        chessBoardSize = len(chessBoard)
+
+        randomCol = randint(0, chessBoardSize-1)
+        randomRow = randint(0, chessBoardSize-1)
+
+        while chessBoard[randomCol] == randomRow:
+            # Checks if the random position isn't the same as the one in the current board, if it is we roll again
+            randomCol = randint(0, chessBoardSize-1)
+            randomRow = randint(0, chessBoardSize-1)
+        
+        chessBoard[randomCol] = randomRow
+        environment = Environment(chessBoardSize, chessBoard)
+        environmentH = environment.h()
+        neighbor = Node(environment.get_chessBoard(), environmentH)
+
+        return neighbor
+
+    def schedule(self, time, maxTime):
+        return (maxTime - (time + 1)) * 0.3
+    
     def copy_chessBoard(self, chessBoard):
         copy = []
         for i in range(0, len(chessBoard)):

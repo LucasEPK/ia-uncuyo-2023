@@ -31,6 +31,10 @@ class Interface:
                 chessBoard, steps = agent.solve_by_hillclimbing()
                 print(chessBoard[:])
                 print(steps)
+                print("=========== SOLVED WITH SIMULATED ANNEALING ===================")
+                chessBoardS, stepsS = agent.solve_by_simulated_annealing()
+                print(chessBoardS[:])
+                print(stepsS)
 
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
                 csvHeader = ['algorithm_name', 'run_n', 'explored_states', 'solution_found']
