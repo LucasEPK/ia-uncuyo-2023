@@ -28,6 +28,7 @@ class Interface:
                 self.environment.print_environment()
                 agent = self.get_agent()
                 size = self.get_size()
+                print("=========== SOLVED WITH HILL CLIMBING ===================")
                 chessBoard, steps = agent.solve_by_hillclimbing()
                 print(chessBoard[:])
                 print(steps)
@@ -35,6 +36,10 @@ class Interface:
                 chessBoardS, stepsS = agent.solve_by_simulated_annealing()
                 print(chessBoardS[:])
                 print(stepsS)
+                print("=========== SOLVED WITH GENETIC ALGORITHM ===================")
+                chessBoardGA, stepsGA = agent.solve_by_genetic_algorithm()
+                print(chessBoardGA[:])
+                print(stepsGA)
 
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
                 csvHeader = ['algorithm_name', 'run_n', 'explored_states', 'solution_found']

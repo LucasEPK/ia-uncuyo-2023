@@ -2,11 +2,12 @@
 import matrices
 from nodes import Node
 from vectors import Vector2
-from random import randint, random
+from random import randint, random, choices
 import math
 
 class Environment:
     chessBoard = None
+    population = None
     size = 0
     
     def __init__(self, size: int, chessBoard= None):
@@ -16,6 +17,11 @@ class Environment:
             self.set_random_chessBoard()
         else:
             self.set_chessBoard(chessBoard)
+        
+        k = round(size/2)
+
+        self.set_population(self.generate_k_random_chessBoards(k))
+
     
     def h(self):
         # Heuristic function that counts the total number of pair of queens that are attacking eachother and returns it
@@ -36,6 +42,22 @@ class Environment:
             
         return h
 
+    def generate_k_random_chessBoards(self, k):
+        size = self.get_size()
+        population = []
+        for j in range(0, k):
+            chessBoard = []
+
+            for i in range(0, size):
+                queenPos = randint(0, size-1)
+                chessBoard.insert(i, queenPos)
+            
+            population.append(chessBoard)
+        
+        return population
+            
+
+
     def print_environment(self):
         print(self.get_chessBoard()[:])
 
@@ -43,6 +65,9 @@ class Environment:
     def set_size(self, size : int):
         # Sets the size of the environment
         self.size = size
+
+    def set_population(self, population):
+        self.population = population
 
     def set_chessBoard(self, chessBoard):
         self.chessBoard = chessBoard
@@ -65,6 +90,9 @@ class Environment:
 
     def get_chessBoard(self):
         return self.chessBoard
+    
+    def get_population(self):
+        return self.population
 
 
 
@@ -116,6 +144,104 @@ class Agent:
 
                 if random_number < probability:
                     current = neighbor
+
+    def solve_by_genetic_algorithm(self):
+        # Solves the 8 queens problem using the population in the environment
+        population = self.get_environment().get_population()
+        time = 0
+        bestIndividual = population[0]
+        maxFitness = self.max_fitness(len(population[0]))
+
+        while not self.fitness(bestIndividual) == maxFitness and time < 1000:
+            newPopulation = []
+            for i in range(0, len(population)):
+                selection = self.random_selection(population)
+                x = selection[0]
+                y = selection[1]
+                child = self.reproduce(x, y)
+                smallProbability = 0.10
+                randomNumber = random()
+                if randomNumber < smallProbability:
+                    child = self.mutate(child)
+                newPopulation.append(child)
+            population = newPopulation
+            bestIndividual = self.best_individual(population)
+            time += 1
+        
+        return bestIndividual, time
+    
+    def max_fitness(self, size):
+        sum1 = 0
+        for i in range(1, size):
+            sum1 +=i
+        
+        return sum1
+    
+    def best_individual(self, population):
+        # Calculates the fitness of every chessboard and returns the one with the most fitness
+        populationSize = len(population)
+        bestIndividual = None
+        bestIndividualFitness = 0
+        for i in range(0, populationSize):
+            currentFitness = self.fitness(population[i])
+            if currentFitness > bestIndividualFitness:
+                bestIndividualFitness = currentFitness
+                bestIndividual = population[i]
+        
+        return bestIndividual
+
+    
+    def reproduce(self, x, y):
+        # Concatenates 2 list from a random crossover point
+        chessBoardSize = len(x)
+        crossoverPoint = randint(1, chessBoardSize-1)
+        return x[:crossoverPoint] + y[crossoverPoint:]
+
+    def mutate(self, child):
+        # Changes a random queen to a random row in a child
+        chessboardSize = len(child)
+
+        col = randint(0, chessboardSize-1)
+        row = randint(0, chessboardSize-1)
+        child[col] = row
+        return child
+
+
+
+    
+    def random_selection(self, population):
+        # Selects 2 chessboards from the population biased towards better fitnesses
+
+        # Calculates the fitness of every chessboard
+        fitnessList = []
+        for i in range(0, len(population)):
+            fitnessList.insert(i, self.fitness(population[i]))
+        
+        selected = choices(population, fitnessList, k=2)
+        return selected
+        
+        
+
+    def fitness(self, chessBoard):
+        size = len(chessBoard)
+        fitness = 0
+
+        for i in range(0, size):
+            attacking=0
+
+            for j in range(i+1, size):
+                #check horizontal
+                if chessBoard[j] == chessBoard[i]: #if this happens then they are in the same row so they attack eachother
+                    attacking += 1
+                
+                #check diagonals
+                elif chessBoard[j] == chessBoard[i]+(j-i) or chessBoard[j] == chessBoard[i]-(j-i): #j-i represents the increment so j is diagonal to i
+                    attacking += 1
+            
+            # We calculate fitness subtracting the attacking queens to the max number of possible attacking queens in the column i
+            fitness += (size-(i+1))-attacking
+            
+        return fitness
 
 
     def make_node(self, environment : Environment) -> Node:
