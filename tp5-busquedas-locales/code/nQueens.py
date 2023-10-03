@@ -18,7 +18,7 @@ class Environment:
         else:
             self.set_chessBoard(chessBoard)
         
-        k = round(size/2)
+        k = size*2
 
         self.set_population(self.generate_k_random_chessBoards(k))
 
@@ -217,7 +217,16 @@ class Agent:
         for i in range(0, len(population)):
             fitnessList.insert(i, self.fitness(population[i]))
         
-        selected = choices(population, fitnessList, k=2)
+        selected = []
+        selected.insert(0, choices(population, fitnessList, k=1)[0])
+        selected.insert(1, choices(population, fitnessList, k=1)[0])
+
+        # This is added to not let one node reproduce by itself generating less variety early
+        maxRepetition = 1000 # This is because some times the population is the same
+        i = 0
+        while selected[1] == selected[0] and i < maxRepetition:
+            selected[1] = choices(population, fitnessList, k=1)[0]
+            i +=1
         return selected
         
         
