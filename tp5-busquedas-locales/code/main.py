@@ -15,7 +15,7 @@ class Interface:
 
     def __init__(self):
         # Initilialize the program
-        self.set_size(4)
+        self.set_size(8)
         self.menu()
         path = ''
         if not self.wantsToExit:

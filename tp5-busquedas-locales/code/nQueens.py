@@ -122,7 +122,7 @@ class Agent:
     
     def solve_by_simulated_annealing(self):
         current = self.make_node(self.get_environment())
-        maxTime = self.get_environment().get_size()*13 # 2 times the maximum steps of hill climbing
+        maxTime = self.get_environment().get_size()*100 # 2 times the maximum steps of hill climbing
         for time in range(0, maxTime):
             temperature = self.schedule(time, maxTime)
 
@@ -135,11 +135,11 @@ class Agent:
             
             neighbor = self.choose_random_neighbor(current)
 
-            evaluation = neighbor.get_value() - current.get_value()
-            if evaluation < 0:
+            deltaE = neighbor.get_value() - current.get_value()
+            if deltaE < 0:
                 current = neighbor
             else:
-                probability = 1 / math.exp(-evaluation / temperature)
+                probability = math.exp(-deltaE / temperature)
                 random_number = random()
 
                 if random_number < probability:
@@ -149,10 +149,11 @@ class Agent:
         # Solves the 8 queens problem using the population in the environment
         population = self.get_environment().get_population()
         time = 0
+        maxTime = 200 * self.get_environment().get_size()
         bestIndividual = population[0]
         maxFitness = self.max_fitness(len(population[0]))
 
-        while not self.fitness(bestIndividual) == maxFitness and time < 1000:
+        while not self.fitness(bestIndividual) == maxFitness and time < maxTime:
             newPopulation = []
             for i in range(0, len(population)):
                 selection = self.random_selection(population)
@@ -308,7 +309,7 @@ class Agent:
         return neighbor
 
     def schedule(self, time, maxTime):
-        return (maxTime - (time + 1)) * 0.3
+        return (maxTime - (time + 1)) * 0.02
     
     def copy_chessBoard(self, chessBoard):
         copy = []
