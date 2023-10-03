@@ -2,6 +2,7 @@
 from nQueens import Environment, Agent
 from vectors import Vector2
 from os import system
+from time import time
 import csv
 
 class Interface:
@@ -17,7 +18,7 @@ class Interface:
         # Initilialize the program
         self.set_size(8)
         self.menu()
-        path = ''
+        path = 'C:/Users/Lucas Estudio/Documents/Universidad/2023 2ndo semestre/Inteligencia_Artificial_1/ia-uncuyo-2023/tp5-busquedas-locales/locales-results.csv'
         if not self.wantsToExit:
         
 
@@ -27,25 +28,84 @@ class Interface:
                 self.create_new_environment_and_agent()
                 self.environment.print_environment()
                 agent = self.get_agent()
-                size = self.get_size()
                 print("=========== SOLVED WITH HILL CLIMBING ===================")
-                chessBoard, steps = agent.solve_by_hillclimbing()
+                chessBoard, steps, solution = agent.solve_by_hillclimbing()
                 print(chessBoard[:])
                 print(steps)
+                print("is it a solution?: ", solution)
                 print("=========== SOLVED WITH SIMULATED ANNEALING ===================")
-                chessBoardS, stepsS = agent.solve_by_simulated_annealing()
+                chessBoardS, stepsS, solutionS = agent.solve_by_simulated_annealing()
                 print(chessBoardS[:])
                 print(stepsS)
+                print("is it a solution?: ", solutionS)
                 print("=========== SOLVED WITH GENETIC ALGORITHM ===================")
-                chessBoardGA, stepsGA = agent.solve_by_genetic_algorithm()
+                chessBoardGA, stepsGA, solutionGA = agent.solve_by_genetic_algorithm()
                 print(chessBoardGA[:])
                 print(stepsGA)
+                print("is it a solution?: ", solutionGA)
 
             else: # This means the user wants to repeat the algorithms 30 times and see the stats
-                csvHeader = ['algorithm_name', 'run_n', 'explored_states', 'solution_found']
+                csvHeader = ['algorithm_name', 'n_queens', 'run_n', 'explored_states', 'time_taken', 'solution_found']
                 csvDataList = []
-                for i in range(30):
-                    pass
+                for j in range(3):
+
+                    match j:
+                        case 0:
+                            n_queens = 4
+                        case 1:
+                            n_queens = 8
+                        case 2:
+                            n_queens = 10
+                    
+                    self.set_size(n_queens)
+
+                    print("=============== N_QUEENS ", n_queens)
+                    print("")
+
+
+                    for i in range(30):
+                        print("=============== EXECUTION ", i+1)
+
+                        self.create_new_environment_and_agent()
+                        agent = self.get_agent()
+
+                        print("=========== SOLVED WITH HILL CLIMBING ===================")
+                        startingTime = time()
+                        chessBoard, steps, solution = agent.solve_by_hillclimbing()
+                        stoppingTime = time()
+                        timeTaken = stoppingTime - startingTime
+                        print(chessBoard[:])
+                        print(steps)
+                        print("is it a solution?: ", solution)
+                        print("time taken: ", timeTaken)
+                        csvData = ['hillClimbing', n_queens, (i+1), steps, timeTaken, solution]
+                        csvDataList.append(csvData)
+
+                        print("=========== SOLVED WITH SIMULATED ANNEALING ===================")
+                        startingTime = time()
+                        chessBoardS, stepsS, solutionS = agent.solve_by_simulated_annealing()
+                        stoppingTime = time()
+                        timeTaken = stoppingTime - startingTime
+                        print(chessBoardS[:])
+                        print(stepsS)
+                        print("is it a solution?: ", solutionS)
+                        print("time taken: ", timeTaken)
+                        csvData = ['simulatedAnnealing', n_queens, (i+1), stepsS, timeTaken, solutionS]
+                        csvDataList.append(csvData)
+
+                        print("=========== SOLVED WITH GENETIC ALGORITHM ===================")
+                        startingTime = time()
+                        chessBoardGA, stepsGA, solutionGA = agent.solve_by_genetic_algorithm()
+                        stoppingTime = time()
+                        timeTaken = stoppingTime - startingTime
+                        print(chessBoardGA[:])
+                        print(stepsGA)
+                        print("is it a solution?: ", solutionGA)
+                        print("time taken: ", timeTaken)
+                        csvData = ['genetic', n_queens, (i+1), stepsGA, timeTaken, solutionGA]
+                        csvDataList.append(csvData)
+
+                        print("")
                 
                 self.write_csv(csvHeader, csvDataList, path)
 

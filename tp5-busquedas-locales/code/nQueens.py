@@ -106,21 +106,22 @@ class Agent:
         self.set_environment(initialEnvironment)
     
     def solve_by_hillclimbing(self):
+        solutionFound = False
         current = self.make_node(self.get_environment())
         maxSteps = self.get_environment().get_size() # This is because on average classic hillclimbing on 8 queens problem takes 4 steps if succeded and 3 if not, so we round it up to 8, which is the problem size
         for i in range(0, maxSteps):
             neighbor = self.choose_best_neighbor(current)
             if neighbor.get_value() >= current.get_value():
                 if current.get_value() == 0:
-                    print("solution lol")
-                else:
-                    print("reached local minimum, h = ", current.get_value())
-                return current.get_state(), i+1
+                    solutionFound = True
+                #print("best h reached:", current.get_value())
+                return current.get_state(), i+1, solutionFound
             current = neighbor
-        print("maxSteps reached")
-        return current.get_state(), maxSteps
+        
+        return current.get_state(), maxSteps, solutionFound
     
     def solve_by_simulated_annealing(self):
+        solutionFound = False
         current = self.make_node(self.get_environment())
         maxTime = self.get_environment().get_size()*100 # 2 times the maximum steps of hill climbing
         for time in range(0, maxTime):
@@ -128,10 +129,9 @@ class Agent:
 
             if temperature == 0:
                 if current.get_value() == 0:
-                    print("solution")
-                else:
-                    print("best attempt:", current.get_value())
-                return current.get_state(), time
+                    solutionFound = True
+                #print("best h reached:", current.get_value())
+                return current.get_state(), time, solutionFound
             
             neighbor = self.choose_random_neighbor(current)
 
@@ -146,14 +146,15 @@ class Agent:
                     current = neighbor
 
     def solve_by_genetic_algorithm(self):
-        # Solves the 8 queens problem using the population in the environment
+        # Solves the 8 queens problem using the population in the environment and a genetic algorithm
+        solutionFound = False
         population = self.get_environment().get_population()
         time = 0
         maxTime = 200 * self.get_environment().get_size()
         bestIndividual = population[0]
         maxFitness = self.max_fitness(len(population[0]))
 
-        while not self.fitness(bestIndividual) == maxFitness and time < maxTime:
+        while not solutionFound and time < maxTime:
             newPopulation = []
             for i in range(0, len(population)):
                 selection = self.random_selection(population)
@@ -167,9 +168,13 @@ class Agent:
                 newPopulation.append(child)
             population = newPopulation
             bestIndividual = self.best_individual(population)
+
+            if self.fitness(bestIndividual) == maxFitness:
+                solutionFound = True
             time += 1
         
-        return bestIndividual, time
+        #print("best fitness reached: ", self.fitness(bestIndividual))
+        return bestIndividual, time, solutionFound
     
     def max_fitness(self, size):
         sum1 = 0
