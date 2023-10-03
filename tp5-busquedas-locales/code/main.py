@@ -1,4 +1,4 @@
-# This module connects all the other modules to execute in conjunction, it creates an environment and an agent to solve a maze with different search algorithms
+# This module connects all the other modules to execute in conjunction, it creates an environment and an agent to solve the n queens problem with different algorithms
 from nQueens import Environment, Agent
 from vectors import Vector2
 from os import system
@@ -23,7 +23,7 @@ class Interface:
         
 
             if self.showType: # This means the user wants to see the agent and environment graphically
-                print("===== LEGEND: the columns of the array represents the columns of the chessboard while the numbers inside the positions represents the row in which the queen si placed, the numbers start from 0\n")
+                print("===== LEGEND: the columns of the array represents the columns of the chessboard while the numbers inside the positions represents the row in which the queen is placed, the numbers start from 0 and we count from top to bottom\n")
 
                 self.create_new_environment_and_agent()
                 self.environment.print_environment()
@@ -44,7 +44,7 @@ class Interface:
                 print(stepsGA)
                 print("is it a solution?: ", solutionGA)
 
-            else: # This means the user wants to repeat the algorithms 30 times and see the stats
+            else: # This means the user wants to repeat the algorithms 30 times with 4,8 and 10 queens and see the stats
                 csvHeader = ['algorithm_name', 'n_queens', 'run_n', 'explored_states', 'time_taken', 'solution_found']
                 csvDataList = []
                 for j in range(3):
@@ -113,8 +113,8 @@ class Interface:
         print("==================== N-QUEENS LOCAL SEARCH =====================")
         print("===============MENU================")
         print("What do you want to see the AI do?")
-        print("1. Show environment and agent graphically")
-        print("2. Repeat 30 times, show stats and write csv")
+        print("1. Show environment and agent graphically (8 queens)")
+        print("2. Repeat 30 times with 4, 8 and 10 queens, show stats and write csv")
         print("3. Exit")
         option = int(input())
 

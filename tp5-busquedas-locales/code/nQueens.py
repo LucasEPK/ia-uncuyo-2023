@@ -1,4 +1,4 @@
-# This module implements an environment and an agent for the labyrinth environment
+# This module implements an environment and an agent for the n_queens problem
 import matrices
 from nodes import Node
 from vectors import Vector2
@@ -57,7 +57,6 @@ class Environment:
         return population
             
 
-
     def print_environment(self):
         print(self.get_chessBoard()[:])
 
@@ -105,7 +104,9 @@ class Agent:
         # Sets the initialEnvironment in which the agent will move in, chooses a random position to start the agent in, adds the agent to the initialEnvironment and sets the total lives of the agent
         self.set_environment(initialEnvironment)
     
+    # =================================== MAIN ALGORITHMS ==============================================
     def solve_by_hillclimbing(self):
+        # Solves the current environment using a basic hill climbing algorithm, returns the solution's chessboard, number of nodes explored and if the solution is complete
         solutionFound = False
         current = self.make_node(self.get_environment())
         maxSteps = self.get_environment().get_size() # This is because on average classic hillclimbing on 8 queens problem takes 4 steps if succeded and 3 if not, so we round it up to 8, which is the problem size
@@ -121,6 +122,7 @@ class Agent:
         return current.get_state(), maxSteps, solutionFound
     
     def solve_by_simulated_annealing(self):
+        # Solves the current environment using a simulated annealing algorithm returns the solution's chessboard, number of nodes explored and if the solution is complete
         solutionFound = False
         current = self.make_node(self.get_environment())
         maxTime = self.get_environment().get_size()*100 # 2 times the maximum steps of hill climbing
@@ -146,7 +148,7 @@ class Agent:
                     current = neighbor
 
     def solve_by_genetic_algorithm(self):
-        # Solves the 8 queens problem using the population in the environment and a genetic algorithm
+        # Solves the 8 queens problem using the population in the environment and a genetic algorithm, returns the solution's chessboard, number of nodes explored and if the solution is complete
         solutionFound = False
         population = self.get_environment().get_population()
         time = 0
@@ -176,90 +178,11 @@ class Agent:
         #print("best fitness reached: ", self.fitness(bestIndividual))
         return bestIndividual, time, solutionFound
     
-    def max_fitness(self, size):
-        sum1 = 0
-        for i in range(1, size):
-            sum1 +=i
-        
-        return sum1
+    # ======================================== AUXILIARY FUNCTIONS =====================================
     
-    def best_individual(self, population):
-        # Calculates the fitness of every chessboard and returns the one with the most fitness
-        populationSize = len(population)
-        bestIndividual = None
-        bestIndividualFitness = 0
-        for i in range(0, populationSize):
-            currentFitness = self.fitness(population[i])
-            if currentFitness > bestIndividualFitness:
-                bestIndividualFitness = currentFitness
-                bestIndividual = population[i]
-        
-        return bestIndividual
-
-    
-    def reproduce(self, x, y):
-        # Concatenates 2 list from a random crossover point
-        chessBoardSize = len(x)
-        crossoverPoint = randint(1, chessBoardSize-1)
-        return x[:crossoverPoint] + y[crossoverPoint:]
-
-    def mutate(self, child):
-        # Changes a random queen to a random row in a child
-        chessboardSize = len(child)
-
-        col = randint(0, chessboardSize-1)
-        row = randint(0, chessboardSize-1)
-        child[col] = row
-        return child
-
-
-
-    
-    def random_selection(self, population):
-        # Selects 2 chessboards from the population biased towards better fitnesses
-
-        # Calculates the fitness of every chessboard
-        fitnessList = []
-        for i in range(0, len(population)):
-            fitnessList.insert(i, self.fitness(population[i]))
-        
-        selected = []
-        selected.insert(0, choices(population, fitnessList, k=1)[0])
-        selected.insert(1, choices(population, fitnessList, k=1)[0])
-
-        # This is added to not let one node reproduce by itself generating less variety early
-        maxRepetition = 1000 # This is because some times the population is the same
-        i = 0
-        while selected[1] == selected[0] and i < maxRepetition:
-            selected[1] = choices(population, fitnessList, k=1)[0]
-            i +=1
-        return selected
-        
-        
-
-    def fitness(self, chessBoard):
-        size = len(chessBoard)
-        fitness = 0
-
-        for i in range(0, size):
-            attacking=0
-
-            for j in range(i+1, size):
-                #check horizontal
-                if chessBoard[j] == chessBoard[i]: #if this happens then they are in the same row so they attack eachother
-                    attacking += 1
-                
-                #check diagonals
-                elif chessBoard[j] == chessBoard[i]+(j-i) or chessBoard[j] == chessBoard[i]-(j-i): #j-i represents the increment so j is diagonal to i
-                    attacking += 1
-            
-            # We calculate fitness subtracting the attacking queens to the max number of possible attacking queens in the column i
-            fitness += (size-(i+1))-attacking
-            
-        return fitness
-
-
+    # == FOR HILLCLIMBING ==
     def make_node(self, environment : Environment) -> Node:
+        # Makes a node for an environment given and returns it
         chessBoard = environment.get_chessBoard()
 
         node = Node()
@@ -267,7 +190,7 @@ class Agent:
         h = environment.h()
         node.set_value(h)
         return node
-
+    
     def choose_best_neighbor(self, node : Node):
         # Generates new chess boards moving only 1 queen in her column and calculates the heuristic for every possible movement, then chooses the movement with the lowest heuristic and returns it as a node
         chessBoard = self.copy_chessBoard(node.get_state())
@@ -293,8 +216,21 @@ class Agent:
         neighborNode = Node(bestNeighbor.get_chessBoard(), bestH)
         return neighborNode
     
-    def choose_random_neighbor(self, node : Node):
+    def copy_chessBoard(self, chessBoard):
+        # Copies a chessboard list and returns it
+        copy = []
+        for i in range(0, len(chessBoard)):
+            copy.insert(i, chessBoard[i])
 
+        return copy
+    
+    # == FOR SIMULATED ANNEALING ==
+    def schedule(self, time, maxTime):
+        # Function to calculate the temperature
+        return (maxTime - (time + 1)) * 0.02
+    
+    def choose_random_neighbor(self, node : Node):
+        # Moves a queen randomly in a column to make a new chessboard and returns the node that forms
         chessBoard = self.copy_chessBoard(node.get_state())
         chessBoardSize = len(chessBoard)
 
@@ -312,21 +248,91 @@ class Agent:
         neighbor = Node(environment.get_chessBoard(), environmentH)
 
         return neighbor
-
-    def schedule(self, time, maxTime):
-        return (maxTime - (time + 1)) * 0.02
     
-    def copy_chessBoard(self, chessBoard):
-        copy = []
-        for i in range(0, len(chessBoard)):
-            copy.insert(i, chessBoard[i])
 
-        return copy
+    # == FOR GENETIC ALGORITHM ==    
+    def max_fitness(self, size):
+        # Calculates the max fitness for a chessboard size (calculation based on the fitness function)
+        sum1 = 0
+        for i in range(1, size):
+            sum1 +=i
+        
+        return sum1
+    
+    def best_individual(self, population):
+        # Calculates the fitness of every chessboard and returns the one with the most fitness
+        populationSize = len(population)
+        bestIndividual = None
+        bestIndividualFitness = 0
+        for i in range(0, populationSize):
+            currentFitness = self.fitness(population[i])
+            if currentFitness > bestIndividualFitness:
+                bestIndividualFitness = currentFitness
+                bestIndividual = population[i]
+        
+        return bestIndividual
 
-    # Setters
+    def reproduce(self, x, y):
+        # Concatenates 2 list from a random crossover point
+        chessBoardSize = len(x)
+        crossoverPoint = randint(1, chessBoardSize-1)
+        return x[:crossoverPoint] + y[crossoverPoint:]
+
+    def mutate(self, child):
+        # Changes a random queen to a random row in a child
+        chessboardSize = len(child)
+
+        col = randint(0, chessboardSize-1)
+        row = randint(0, chessboardSize-1)
+        child[col] = row
+        return child
+    
+    def random_selection(self, population):
+        # Selects 2 chessboards from the population biased towards better fitnesses
+
+        # Calculates the fitness of every chessboard
+        fitnessList = []
+        for i in range(0, len(population)):
+            fitnessList.insert(i, self.fitness(population[i]))
+        
+        selected = []
+        selected.insert(0, choices(population, fitnessList, k=1)[0])
+        selected.insert(1, choices(population, fitnessList, k=1)[0])
+
+        # This is added to not let one node reproduce by itself generating less variety early
+        maxRepetition = 1000 # This is because some times the population is the same
+        i = 0
+        while selected[1] == selected[0] and i < maxRepetition:
+            selected[1] = choices(population, fitnessList, k=1)[0]
+            i +=1
+        return selected
+    
+    def fitness(self, chessBoard):
+        # Calculates the number of non attacking pairs of queens
+        size = len(chessBoard)
+        fitness = 0
+
+        for i in range(0, size):
+            attacking=0
+
+            for j in range(i+1, size):
+                #check horizontal
+                if chessBoard[j] == chessBoard[i]: #if this happens then they are in the same row so they attack eachother
+                    attacking += 1
+                
+                #check diagonals
+                elif chessBoard[j] == chessBoard[i]+(j-i) or chessBoard[j] == chessBoard[i]-(j-i): #j-i represents the increment so j is diagonal to i
+                    attacking += 1
+            
+            # We calculate fitness subtracting the attacking queens to the max number of possible attacking queens in the column i
+            fitness += (size-(i+1))-attacking
+            
+        return fitness
+
+    # SETTERS
     def set_environment(self, initialEnvironment: Environment):
         self.initialEnvironment = initialEnvironment
             
-    # Getters
+    # GETTERS
     def get_environment(self) -> Environment:
         return self.initialEnvironment
