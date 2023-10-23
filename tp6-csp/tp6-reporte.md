@@ -3,11 +3,11 @@
 ## 1)
 *Describir en detalle una formulación CSP para el Sudoku.*
 
-Nombramos a las variables desde A1 a A9 para la primera fila hasta I1 a I9 para la ultima
+Nombramos a las variables desde A1 a A9 para la primera fila hasta I1 a I9 para la ultima.
 
-Las casillas vacias tienen como dominio {1,2,3,4,5,6,7,8,9} y la casillas pre-llenadas tienen solo 1 numero como dominio
+Las casillas vacias tienen como dominio {1,2,3,4,5,6,7,8,9} y la casillas pre-llenadas tienen solo 1 numero como dominio.
 
-Existen 27 diferentes restricciones Alldiff, una por cada fila columna y caja de 9 cuadrados:
+Vamos a usar la restricción global Alldiff, existen 27 diferentes restricciones Alldiff, una por cada fila columna y caja de 9 cuadrados:
 
 - Todas las filas tienen que tener diferentes numeros
 
