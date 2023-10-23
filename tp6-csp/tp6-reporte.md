@@ -1,6 +1,6 @@
-# TP6 reporte
-### Lucas Moyano
-# 1)
+# TP6
+## Lucas Moyano
+## 1)
 *Describir en detalle una formulación CSP para el Sudoku.*
 
 Nombramos a las variables desde A1 a A9 para la primera fila hasta I1 a I9 para la ultima
@@ -9,25 +9,67 @@ Las casillas vacias tienen como dominio {1,2,3,4,5,6,7,8,9} y la casillas pre-ll
 
 Existen 27 diferentes restricciones Alldiff, una por cada fila columna y caja de 9 cuadrados:
 
-Alldiff(A1,A2,A3,A4,A5,A6, A7, A8, A9)
+- Todas las filas tienen que tener diferentes numeros
 
-Alldiff(B1,B2,B3,B4,B5,B6,B7,B8,B9)
+Alldiff(A1, A2, A3, A4, A5, A6, A7, A8, A9)
 
-· · ·
+Alldiff(B1, B2, B3, B4, B5, B6, B7, B8, B9)
 
-Alldiff(A1,B1,C1,D1,E1, F1,G1,H1, I1)
+Alldiff(C1, C2, C3, C4, C5, C6, C7, C8, C9)
 
-Alldiff(A2,B2,C2,D2,E2, F2,G2,H2, I2)
+Alldiff(D1, D2, D3, D4, D5, D6, D7, D8, D9)
 
-· · ·
+Alldiff(E1, E2, E3, E4, E5, E6, E7, E8, E9)
 
-Alldiff(A1,A2,A3,B1,B2,B3,C1,C2,C3)
+Alldiff(F1, F2, F3, F4, F5, F6, F7, F8, F9)
 
-Alldiff(A4,A5,A6,B4,B5,B6,C4,C5,C6)
+Alldiff(G1, G2, G3, G4, G5, G6, G7, G8, G9)
 
-· · ·
+Alldiff(H1, H2, H3, H4, H5, H6, H7, H8, H9)
 
-# 2)
+Alldiff(I1, I2, I3, I4, I5, I6, I7, I8, I9)
+
+- Todas las columnas tienen que tener diferentes numeros
+
+Alldiff(A1, B1, C1, D1, E1, F1, G1, H1, I1)
+
+Alldiff(A2, B2, C2, D2, E2, F2, G2, H2, I2)
+
+Alldiff(A3, B3, C3, D3, E3, F3, G3, H3, I3)
+
+Alldiff(A4, B4, C4, D4, E4, F4, G4, H4, I4)
+
+Alldiff(A5, B5, C5, D5, E5, F5, G5, H5, I5)
+
+Alldiff(A6, B6, C6, D6, E6, F6, G6, H6, I6)
+
+Alldiff(A7, B7, C7, D7, E7, F7, G7, H7, I7)
+
+Alldiff(A8, B8, C8, D8, E8, F8, G8, H8, I8)
+
+Alldiff(A9, B9, C9, D9, E9, F9, G9, H9, I9)
+
+- Todas las cajas tienen que tener diferentes numeros
+
+Alldiff(A1, A2, A3, B1, B2, B3, C1, C2, C3)
+
+Alldiff(A4, A5, A6, B4, B5, B6, C4, C5, C6)
+
+Alldiff(A7, A8, A9, B7, B8, B9, C7, C8, C9)
+
+Alldiff(D1, D2, D3, E1, E2, E3, F1, F2, F3)
+
+Alldiff(D4, D5, D6, E4, E5, E6, F4, F5, F6)
+
+Alldiff(D7, D8, D9, E7, E8, E9, F7, F8, F9)
+
+Alldiff(G1, G2, G3, H1, H2, H3, I1, I2, I3)
+
+Alldiff(G4, G5, G6, H4, H5, H6, I4, I5, I6)
+
+Alldiff(G7, G8, G9, H7, H8, H9, I7, I8, I9)
+
+## 2)
 *Utilizar el algoritmo AC-3 para demostrar que la arco consistencia puede detectar la inconsistencia de la asignación parcial {WA=red, V=blue} para el problema del colorar el mapa de Australia (Figura 5.1 AIMA 2da edición ).*
 
  - antes de ejecutar AC-3:
@@ -590,30 +632,22 @@ D(T) = {red,blue,green}
 
 **El algoritmo para y devuelve false ya que un dominio se ha quedado vacio osea que no hay arco consistencia**
 
-# 3) 
+## 3) 
 *Cuál es la complejidad en el peor caso cuando se ejecuta AC-3 en un árbol estructurado CSP. (i.e. Cuando el grafo de restricciones forma un árbol: cualquiera dos variables están relacionadas por a lo sumo un camino).*
 
 Teniendo n vertices y a lo sumo d numeros en los dominios el orden va a ser de O(n*(d^2)) d^2 porque los 2 vertices de una arista tienen d posibles variables.
 
-# 4) 
+## 4) 
 *AC-3 coloca de nuevo en la cola todo arco ( Xk, Xi) cuando cualquier valor es removido del dominio de Xi incluso si cada valor de Xk es consistente con los valores restantes de Xi. Supongamos que por cada arco ( Xk,Xi) se puede llevar la cuenta del número de valores restantes de Xi que sean consistentes con cada valor de Xk . Explicar como actualizar ese número de manera eficiente y demostrar que la arco consistencia puede lograrse en un tiempo total O(n2d2 )*
 
-# 5) 
+## 5) 
 *Demostrar la correctitud del algoritmo CSP para árboles estructurados (sección 5.4, p.172 AIMA 2da edición). Para ello, demostrar:*
 
 	a. *Que para un CSP cuyo grafo de restricciones es un árbol, 2-consistencia (consistencia de arco) implica n-consistencia (siendo n número total de variables)*
 	
 	b. *Argumentar por qué lo demostrado en a. es suficiente.*
 	
-# 6)
-Implementar una solución al problema de las n-reinas utilizando una formulación CSP
-
-	a.Implementar una solución utilizando backtracking
-
-	b. Implementar una solución utilizando encadenamiento hacia adelante.
-	c. En cada variante, calcular los tiempos de ejecución para los casos de 4, 8, 10, 12 y 15 reinas.
-	d. En cada variante, calcular la cantidad de estados recorridos antes de llegar a la solución para los casos de 4, 8, 10, 12 y 15 reinas.
-	e. Realizar un gráfico de cajas para los puntos c y d.
+## 6)
 
 e.
 ![](img/estados_recorridos.PNG)
