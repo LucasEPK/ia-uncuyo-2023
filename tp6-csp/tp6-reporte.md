@@ -648,7 +648,19 @@ Haciendo un **topological sort**, cada arbol con *n* nodos tiene *n-1* arcos, en
 	a. *Que para un CSP cuyo grafo de restricciones es un árbol, 2-consistencia (consistencia de arco) implica n-consistencia (siendo n número total de variables)*
 	
 	b. *Argumentar por qué lo demostrado en a. es suficiente.*
-	
+
+2-consistencia => n-consistencia
+
+2-consistencia nos dice que Xi es arco-consistente con respecto de otra variable Xj si para toda variable en el actual dominio Di hay algun valor en el dominio Dj que satisfaga la restricción binaria en el arco (Xi, Xj).
+
+Osea que para cada Xi Xj del arbol, para todos los valores de Di hay un valor en Dj que satisfaga la restricción binaria de (Xi, Xj)
+
+Mientras que k-consistencia dice que un CSP es k-consistente si para cualquier conjunto de k-1 variables y para cualquier asignación consistente de esas variables, siempre se puede asignar un valor consistente para cualquier k-esima variable.
+
+Como el arbol es 2-consistente entonces también va a ser camino-consistente (path-consistent) ya que para ir de una variable a otra solo hay un camino, y ese camino va a ser siempre consistente ya que cualquier restricción binaria (Xi, Xm) (Xm, Xj) se satisface.
+
+Y como solo hay un camino de cualquier variable a otra, siempre se va a poder asignar valores consistentes a las n-1 variables tomando un camino y a la n-esima variable como el arbol es arco-consistente va a ser consistente con cualquier otra variable.
+
 ## 6)
 > Implementar una solución al problema de las n-reinas utilizando una formulación CSP
 
