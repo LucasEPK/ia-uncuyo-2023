@@ -642,6 +642,16 @@ Haciendo un **topological sort**, cada arbol con *n* nodos tiene *n-1* arcos, en
 ## 4) 
 > AC-3 coloca de nuevo en la cola todo arco (Xk, Xi) cuando cualquier valor es removido del dominio de Xi incluso si cada valor de Xk es consistente con los valores restantes de Xi. Supongamos que por cada arco (Xk, Xi) se puede llevar la cuenta del número de valores restantes de Xi que sean consistentes con cada valor de Xk . Explicar como actualizar ese número de manera eficiente y demostrar que la arco consistencia puede lograrse en un tiempo total O(n^2*d^2)
 
+Podemos usar una estructura de datos llamada "matriz de soporte".
+
+Primero inicializamos la matriz de soporte, que va a ser una matriz con filas correspondientes a los valores de Xk y columnas correspondientes con valores de Xi. Inicializada con todos los valores en 0.
+
+Después vamos a recorrer todas las restricciones y para cada restricción (Xk, Xi), actualizar la matriz de soporte para reflejar valores consistentes de Xi para cada valor Xk. Esto puede ser hecho iterando en los dominios de Xk y Xi y fijándose en la consistencia entre los valores. Por ejemplo, para cada valor xk en el dominio de Xk y por cada valor xi en el dominio de Xi, fijarse si (xk, xi) es consistente, si lo es, incrementar la posición correspondiente en la matriz de soporte.
+
+Como ultimo vamos a imponer la arco-consistencia. Durante el algoritmo AC-3, cuando removemos un valor del dominio de Xi, disminuimos la posición correspondiente en la matriz de soporte para todos los valores de Xk. Si el valor en la matriz de soporte para un valor particular de Xk se convierte en 0, sabemos que no quedan valores consistentes de Xi para ese valor de Xk, y podemos poner (Xk, Xi) de vuelta en la cola para procesamiento a futuro.
+
+La complejidad temporal viene del hecho de tener que iterar sobre todos los pares de variables (n^2) y, para todo par, iterar sobre todo los pares de valores en sus dominios (d^2) para actualizar la matriz de soporte. Esto se asegura que tomemos en cuenta todas las posibles combinaciones de valores variables y sus relaciones de consistencia.
+
 ## 5) 
 > Demostrar la correctitud del algoritmo CSP para árboles estructurados (sección 5.4, p.172 AIMA 2da edición). Para ello, demostrar:
 
@@ -653,13 +663,13 @@ Haciendo un **topological sort**, cada arbol con *n* nodos tiene *n-1* arcos, en
 
 2-consistencia nos dice que Xi es arco-consistente con respecto de otra variable Xj si para toda variable en el actual dominio Di hay algun valor en el dominio Dj que satisfaga la restricción binaria en el arco (Xi, Xj).
 
-Osea que para cada Xi Xj del arbol, para todos los valores de Di hay un valor en Dj que satisfaga la restricción binaria de (Xi, Xj)
+Osea que para cada Xi Xj del árbol, para todos los valores de Di hay un valor en Dj que satisfaga la restricción binaria de (Xi, Xj)
 
 Mientras que k-consistencia dice que un CSP es k-consistente si para cualquier conjunto de k-1 variables y para cualquier asignación consistente de esas variables, siempre se puede asignar un valor consistente para cualquier k-esima variable.
 
-Como el arbol es 2-consistente entonces también va a ser camino-consistente (path-consistent) ya que para ir de una variable a otra solo hay un camino, y ese camino va a ser siempre consistente ya que cualquier restricción binaria (Xi, Xm) (Xm, Xj) se satisface.
+Como el árbol es 2-consistente entonces también va a ser camino-consistente (path-consistent) ya que para ir de una variable a otra solo hay un camino, y ese camino va a ser siempre consistente ya que cualquier restricción binaria (Xi, Xm) (Xm, Xj) se satisface.
 
-Y como solo hay un camino de cualquier variable a otra, siempre se va a poder asignar valores consistentes a las n-1 variables tomando un camino y a la n-esima variable como el arbol es arco-consistente va a ser consistente con cualquier otra variable.
+Y como solo hay un camino de cualquier variable a otra, siempre se va a poder asignar valores consistentes a las n-1 variables tomando un camino y a la n-esima variable como el árbol es arco-consistente va a ser consistente con cualquier otra variable.
 
 ## 6)
 > Implementar una solución al problema de las n-reinas utilizando una formulación CSP
