@@ -1,0 +1,78 @@
+---
+title: "TP7 notebook"
+output: html_notebook
+---
+
+1.  Bajar el archivo arbolado-mendoza-dataset.csv, el mismo se encuentra en formato CSV (comma separated values).
+
+```{=html}
+<!-- -->
+```
+a.  Seleccionar de manera uniformemente aleatoria el 20% del conjunto de datos y crear un nuevo archivo con el nombre de arbolado-mendoza-dataset-validation.csv y el 80% restante con el nombre de arbolado-mendoza-dataset-train.csv
+
+```{r}
+library(readr)
+library(tidyverse)
+library(caret)
+
+arboladoDS <- read_csv("../data/arbolado-mza-dataset.csv")
+arboladoRows <- nrow(arboladoDS)
+# Here we shuffle the dataset's rows randomly
+shuffledDS <- arboladoDS[sample(1:arboladoRows),]
+
+# Here we calculate how many rows is 20% of the total rows, and also the remaining 80%
+N20Percent <- round(arboladoRows*0.20)
+Nremaining <- arboladoRows-N20Percent
+# Here we split the shuffled dataset in a half, validationDS takes the first 20% of rows while trainDS takes the remaining 80% of rows
+validationDS <- slice_head(shuffledDS, n = N20Percent)
+trainDS <- slice_tail(shuffledDS, n = Nremaining)
+
+# Writes to memory the resulting train and validation datasets
+write.csv(validationDS, "../data/arbolado-mza-dataset-validation.csv", row.names=FALSE)
+write.csv(trainDS, "../data/arbolado-mza-dataset-train.csv", row.names=FALSE)
+```
+
+2.  A partir del archivo arbolado-mendoza-dataset-train.csv responder las siguientes preguntas:
+
+```{=html}
+<!-- -->
+```
+a.  Cual es la distribución de las clase inclinacion_peligrosa?
+b.  ¿Se puede considerar alguna sección más peligrosa que otra?
+c.  ¿Se puede considerar alguna especie más peligrosa que otra?
+
+IMPORTANTE: para responder cada una de estas preguntas se deberá generar una visualización/gráfico que justifique la respuesta.
+
+```{r}
+library(readr)
+library(tidyverse)
+library(caret)
+library(ggplot2)
+
+arboladoTrainDS <- read_csv("../data/arbolado-mza-dataset-train.csv")
+
+inclinacionPeligrosaColumn <- select(arboladoTrainDS, inclinacion_peligrosa)
+distribucionPeligrosa <- table(inclinacionPeligrosaColumn)
+distribucionPeligrosa
+barplot(distribucionPeligrosa)
+
+
+# Here we group by species and calculate the probability of picking randomly a dangerously inclined tree by specie
+especiesPeligrosas <- arboladoTrainDS %>% group_by(especie) %>%
+  summarise(
+    porcentaje_inclinacion_peligrosa = sum(inclinacion_peligrosa)/length(inclinacion_peligrosa)
+  )
+
+ggplot(especiesPeligrosas, aes(x=especie, y=porcentaje_inclinacion_peligrosa)) + 
+  geom_bar(stat = "identity")+
+  coord_flip()
+
+# Here we group by sections and calculate the probability of picking randomly a dangerously inclined tree by sections
+seccionesPeligrosas <- arboladoTrainDS %>% group_by(seccion) %>%
+  summarise(
+    porcentaje_inclinacion_peligrosa = sum(inclinacion_peligrosa)/length(inclinacion_peligrosa)
+  )
+
+ggplot(seccionesPeligrosas, aes(x=seccion, y=porcentaje_inclinacion_peligrosa)) + 
+  geom_bar(stat = "identity")
+```
