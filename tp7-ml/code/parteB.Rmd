@@ -1,0 +1,81 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+library(rpart)
+library(caret)
+library(readr)
+library(dplyr)
+library(ranger)
+
+data_train <- read_csv("../data/arbolado-mza-dataset-train.csv",col_types = cols(
+  id = col_integer(),
+  especie = col_character(),
+  ultima_modificacion = col_character(),
+  altura = col_character(),
+  circ_tronco_cm = col_double(),
+  diametro_tronco = col_character(),
+  long = col_double(),
+  lat = col_double(),
+  seccion = col_integer(),
+  nombre_seccion = col_character(),
+  area_seccion = col_double(),
+  inclinacion_peligrosa = col_integer()
+))
+
+data_validation <-  read_csv("../data/arbolado-mza-dataset-validation.csv",col_types = cols(
+  id = col_integer(),
+  especie = col_character(),
+  ultima_modificacion = col_character(),
+  altura = col_character(),
+  circ_tronco_cm = col_double(),
+  diametro_tronco = col_character(),
+  long = col_double(),
+  lat = col_double(),
+  seccion = col_integer(),
+  nombre_seccion = col_character(),
+  area_seccion = col_double()
+))
+
+data_test <-  read_csv("../data/arbolado-mza-dataset-test.csv",col_types = cols(
+  id = col_integer(),
+  especie = col_character(),
+  ultima_modificacion = col_character(),
+  altura = col_character(),
+  circ_tronco_cm = col_double(),
+  diametro_tronco = col_character(),
+  long = col_double(),
+  lat = col_double(),
+  seccion = col_integer(),
+  nombre_seccion = col_character(),
+  area_seccion = col_double()
+))
+
+# Training model
+train_formula <- formula(inclinacion_peligrosa~especie+ultima_modificacion+altura+circ_tronco_cm+diametro_tronco+long+lat+seccion+area_seccion)
+
+rf_model <- ranger(train_formula, data = data_train)
+
+# Using model on validation
+preds_tree_probs = predict(rf_model, data_validation)
+
+preds_tree = ifelse(preds_tree_probs$predictions >=0.5,1,0)
+
+validation_comparison <- data.frame(id=data_validation$id, inclinacionPeligrosa= data_validation$inclinacion_peligrosa,inclinacion_peligrosa_pred=preds_tree)
+
+
+confusionMatrix(as.factor(validation_comparison$inclinacion_peligrosa_pred),as.factor(data_validation$inclinacion_peligrosa))
+
+# Using model on test
+test_preds_tree_probs = predict(rf_model, data_test)
+
+test_preds_tree = ifelse(test_preds_tree_probs$predictions >=0.5,1,0)
+
+submission <- data.frame(id=data_test$id, inclinacion_peligrosa = test_preds_tree)
+write_csv(submission,"../data/arbolado-mza-dataset-envio-rf0.csv")
+submission
+```

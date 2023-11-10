@@ -76,3 +76,44 @@ seccionesPeligrosas <- arboladoTrainDS %>% group_by(seccion) %>%
 ggplot(seccionesPeligrosas, aes(x=seccion, y=porcentaje_inclinacion_peligrosa)) + 
   geom_bar(stat = "identity")
 ```
+3. A partir del archivo arbolado-mendoza-dataset-train.csv:
+
+b. Generar un histograma de frecuencia para la variable circ_tronco_cm. Probar con diferentes números de bins.  
+c. Repetir el punto b) pero separando por la clase de la variable inclinación_peligrosa?  
+d. Crear una nueva variable categórica de nombre circ_tronco_cm_cat a partir circ_tronco_cm, en donde puedan asignarse solo 4 posibles valores [ muy alto, alto, medio, bajo ]. Utilizar la información del punto b. para seleccionar los puntos de corte para cada categoría. Guardar el nuevo dataframe bajo el nombre de arbolado-mendoza-dataset-circ_tronco_cm-train.csv
+
+Los criterios de corte son:
+Si es menor o igual que 90, bajo
+si es mayor o igual que 90 y menor que 170, medio
+si es mayor o igual que 170 y menor que 240, alto
+si es mayor o igual que 240, muy alto
+```{r}
+library(readr)
+library(tidyverse)
+library(caret)
+
+arboladoTrainDS <- read_csv("../data/arbolado-mza-dataset-train.csv")
+# Makes different histograms with different bins values
+hist(arboladoTrainDS$circ_tronco_cm, main = "Histograma de circ_tronco_cm", xlab = "Circunferencia tronco en cm", ylab = "Frecuencia", col = 4)
+hist(arboladoTrainDS$circ_tronco_cm, breaks = 50, main = "Histograma de circ_tronco_cm con 50 bins", xlab = "Circunferencia tronco en cm", ylab = "Frecuencia", col = 4)
+hist(arboladoTrainDS$circ_tronco_cm, breaks = 100, main = "Histograma de circ_tronco_cm con 100 bins", xlab = "Circunferencia tronco en cm", ylab = "Frecuencia", col = 4)
+hist(arboladoTrainDS$circ_tronco_cm, breaks = 200, main = "Histograma de circ_tronco_cm con 200 bins", xlab = "Circunferencia tronco en cm", ylab = "Frecuencia", col = 4)
+
+# Select circ_tronco_cm where inclinacion_peligrosa is equal to 0
+circTroncoSinPeligro <- subset(arboladoTrainDS$circ_tronco_cm, arboladoTrainDS$inclinacion_peligrosa == 0)
+# Select circ_tronco_cm where inclinacion_peligrosa is equal to 1
+circTroncoPeligrosa <- subset(arboladoTrainDS$circ_tronco_cm, arboladoTrainDS$inclinacion_peligrosa == 1)
+
+hist(circTroncoSinPeligro, main = "Histograma de circ_tronco_cm SIN inclinación peligrosa", xlab = "Circunferencia tronco en cm", ylab = "Frecuencia", breaks = 20, col = 3)
+hist(circTroncoPeligrosa, main = "Histograma de circ_tronco_cm CON inclinación peligrosa", xlab = "Circunferencia tronco en cm", ylab = "Frecuencia", col = 2)
+
+circTroncoDS <- arboladoTrainDS %>% 
+  mutate(circ_tronco_cm_cat = ifelse(circ_tronco_cm < 90, "bajo",
+                                ifelse(circ_tronco_cm < 170, "medio", 
+                                       ifelse(circ_tronco_cm < 240, "alto", "muy alto")
+                                       )
+                                )
+         )
+
+write.csv(circTroncoDS, "../data/arbolado-mza-dataset-circ_tronco_cm-train.csv", row.names=FALSE)
+```
