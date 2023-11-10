@@ -5,9 +5,8 @@ output: html_notebook
 
 1.  Bajar el archivo arbolado-mendoza-dataset.csv, el mismo se encuentra en formato CSV (comma separated values).
 
-```{=html}
 <!-- -->
-```
+
 a.  Seleccionar de manera uniformemente aleatoria el 20% del conjunto de datos y crear un nuevo archivo con el nombre de arbolado-mendoza-dataset-validation.csv y el 80% restante con el nombre de arbolado-mendoza-dataset-train.csv
 
 ```{r}
@@ -34,9 +33,8 @@ write.csv(trainDS, "../data/arbolado-mza-dataset-train.csv", row.names=FALSE)
 
 2.  A partir del archivo arbolado-mendoza-dataset-train.csv responder las siguientes preguntas:
 
-```{=html}
 <!-- -->
-```
+
 a.  Cual es la distribución de las clase inclinacion_peligrosa?
 b.  ¿Se puede considerar alguna sección más peligrosa que otra?
 c.  ¿Se puede considerar alguna especie más peligrosa que otra?
@@ -68,25 +66,26 @@ ggplot(especiesPeligrosas, aes(x=especie, y=porcentaje_inclinacion_peligrosa)) +
   coord_flip()
 
 # Here we group by sections and calculate the probability of picking randomly a dangerously inclined tree by sections
-seccionesPeligrosas <- arboladoTrainDS %>% group_by(seccion) %>%
+seccionesPeligrosas <- arboladoTrainDS %>% group_by(nombre_seccion) %>%
   summarise(
     porcentaje_inclinacion_peligrosa = sum(inclinacion_peligrosa)/length(inclinacion_peligrosa)
   )
 
-ggplot(seccionesPeligrosas, aes(x=seccion, y=porcentaje_inclinacion_peligrosa)) + 
-  geom_bar(stat = "identity")
+ggplot(seccionesPeligrosas, aes(x=nombre_seccion, y=porcentaje_inclinacion_peligrosa)) + 
+  geom_bar(stat = "identity")+
+  coord_flip()
 ```
-3. A partir del archivo arbolado-mendoza-dataset-train.csv:
 
-b. Generar un histograma de frecuencia para la variable circ_tronco_cm. Probar con diferentes números de bins.  
-c. Repetir el punto b) pero separando por la clase de la variable inclinación_peligrosa?  
-d. Crear una nueva variable categórica de nombre circ_tronco_cm_cat a partir circ_tronco_cm, en donde puedan asignarse solo 4 posibles valores [ muy alto, alto, medio, bajo ]. Utilizar la información del punto b. para seleccionar los puntos de corte para cada categoría. Guardar el nuevo dataframe bajo el nombre de arbolado-mendoza-dataset-circ_tronco_cm-train.csv
+3.  A partir del archivo arbolado-mendoza-dataset-train.csv:
 
-Los criterios de corte son:
-Si es menor o igual que 90, bajo
-si es mayor o igual que 90 y menor que 170, medio
-si es mayor o igual que 170 y menor que 240, alto
-si es mayor o igual que 240, muy alto
+<!-- -->
+
+b.  Generar un histograma de frecuencia para la variable circ_tronco_cm. Probar con diferentes números de bins.\
+c.  Repetir el punto b) pero separando por la clase de la variable inclinación_peligrosa?\
+d.  Crear una nueva variable categórica de nombre circ_tronco_cm_cat a partir circ_tronco_cm, en donde puedan asignarse solo 4 posibles valores [ muy alto, alto, medio, bajo ]. Utilizar la información del punto b. para seleccionar los puntos de corte para cada categoría. Guardar el nuevo dataframe bajo el nombre de arbolado-mendoza-dataset-circ_tronco_cm-train.csv
+
+Los criterios de corte son: Si es menor que 90, bajo si es mayor o igual que 90 y menor que 170, medio si es mayor o igual que 170 y menor que 240, alto si es mayor o igual que 240, muy alto
+
 ```{r}
 library(readr)
 library(tidyverse)
