@@ -116,3 +116,87 @@ circTroncoDS <- arboladoTrainDS %>%
 
 write.csv(circTroncoDS, "../data/arbolado-mza-dataset-circ_tronco_cm-train.csv", row.names=FALSE)
 ```
+
+4. Clasificador aleatório:
+
+a. Implementar una función que dado un conjunto de observaciones (data.frame) genere una nueva columna de nombre prediction_prob con un valor aleatorio entre 0 y 1.  
+b. Implementar una función de nombre random_classifier, que reciba como parámetro el dataframe generado con anterioridad y a partir de la columna predictions_prob genere una nueva columna prediction_class bajo el siguiente criterio:  
+If predictions_prob > 0.5 then prediction_class=1 else prediction_class=0  
+La función deberá devolver el dataframe original junto a la nueva columna generada.  
+c. Cargar el archivo arbolado-mendoza-dataset-validation.csv como un data.frame y aplicarle la función random_classifier  
+d. A partir de la columna recientemente generada y la columna con la clase (inclinación peligrosa) calcular utilizando lenguaje R (dplyr) el número de:  
+i. Número de árboles CON inclinación peligrosa que fueron correctamente predicho como peligrosos por el modelo/algoritmo. (True Positive)  
+ii. Número de árboles SIN inclinación peligrosa que fueron correctamente predicho como no peligrosos por el modelo. (True Negative)  
+iii. Número de árboles SIN inclinación peligrosa que fueron incorrectamente predicho como peligrosos según el modelo. (False Positives)  
+iv. Número de árboles CON inclinación peligrosa que fueron incorrectamente predicho como no peligrosos según el modelo. (False Negatives)
+
+```{r}
+library(readr)
+library(tidyverse)
+library(caret)
+
+new_prediction_prob <- function(dataframe) { 
+  # Function that creates a new column in the dataframe given with random values between 0 and 1
+  predictionProbDS <- dataframe %>% 
+    mutate(prediction_prob = runif(n()))
+  return(predictionProbDS)
+}
+
+random_classifier <- function(ogDataframe, predictionProbDF) {
+  # Function that creates a new column in the original dataframe given with random values between 0 and 1 decided by the prediction_prob in the predictionProbDF given
+  # If the prediction_prob is more than 5 the new column will have a value of 1, else it will have a value of 0
+  predictionClassCol <- predictionProbDF %>% 
+    mutate(prediction_class = ifelse(prediction_prob > 0.5, 1, 0)) %>%
+    select(prediction_class)
+  
+  predictionClassDF <- ogDataframe %>% 
+    add_column(predictionClassCol)
+  
+  return(predictionClassDF)
+}
+
+make_confusion_matrix <- function(dataframe) {
+  # Makes a confusion matrix using dplyr with the prediction_class of the dataframe and the inclinacion_peligrosa of the dataframe
+  
+  # Calculates True Positives
+  truePositives <- dataframe %>%
+    filter(prediction_class == 1 & prediction_class == inclinacion_peligrosa) %>%
+    nrow()
+  # Calculates True Negatives
+  trueNegatives <- dataframe %>%
+    filter(prediction_class == 0 & prediction_class == inclinacion_peligrosa) %>%
+    nrow()
+  # Calculates False Positives
+  falsePositives <- dataframe %>%
+    filter(prediction_class == 1 & prediction_class != inclinacion_peligrosa) %>%
+    nrow()
+  # Calculates False Negatives
+  falseNegatives <- dataframe %>%
+    filter(prediction_class == 0 & prediction_class != inclinacion_peligrosa) %>%
+    nrow()
+  
+  matrix <- matrix(c(trueNegatives, falsePositives, falseNegatives, truePositives), nrow = 2, ncol = 2, byrow = TRUE)
+  # specify the column names and row names of matrix
+  colnames(matrix) = c('Predicted: No','Predicted: Yes')
+  rownames(matrix) <- c('Actual: No','Actual: Yes')
+  
+  confusionMatrix1 <- as.table(matrix)
+  
+  return(confusionMatrix1)
+}
+
+arboladoValidationDS <- read_csv("../data/arbolado-mza-dataset-validation.csv")
+
+# Creates a new column called prediction_prob with a random number between 0 and 1 in the arboladoValidationDS dataframe
+predictionProbDS <- new_prediction_prob(arboladoValidationDS)
+predictionProbDS
+
+# Creates a new column called prediction_class with random predictions of 0 and 1
+predictionClassDF <- random_classifier(arboladoValidationDS, predictionProbDS)
+predictionClassDF
+
+confMatrix <- make_confusion_matrix(predictionClassDF)
+print("")
+confMatrix
+
+```
