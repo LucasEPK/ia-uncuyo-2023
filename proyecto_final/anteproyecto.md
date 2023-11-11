@@ -13,13 +13,15 @@ La idea de este proyecto es **programar un algoritmo genético para el juego que
 
 ## 2. Objetivos:
 
-- Llegar al 100% (nivel completado)
-- Coleccionar todas las monedas
+El algoritmo genético tiene que:
+
+- Llegar al 100% (nivel completado) o a un buen porcentaje (mayor que 80%-70%)
+- Coleccionar el mayor numero de monedas (máximo 3)
 - Minimizar el numero de intentos
 
 ## 3. Alcance:
 
-El algoritmo puede aprender a jugar CDcrash aunque los niveles que juega sean diferentes.
+El alcance del proyecto se limitará al nivel 1 de CDcrash. Las variables y complejidades de niveles posteriores no estarán contempladas en esta fase inicial.
 
 ## 4. Limitaciones:
 
