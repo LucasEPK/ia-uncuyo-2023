@@ -5,9 +5,11 @@
 ### Lucas Moyano
 
 ## 1. Descripción
-![]()
+![](imgs/CDcrashScreen.png)
 
-La idea de este proyecto es programar un algoritmo genético para el juego que estoy desarrollando llamado CDcrash implementado usando el mismo código fuente en Godot usando GDscript, observar hasta que porcentaje del nivel llega y compararlo con un algoritmo aleatorio.
+La idea de este proyecto es **programar un algoritmo genético para el juego que estoy desarrollando llamado CDcrash** implementado usando el mismo código fuente en Godot usando GDscript, observar hasta que porcentaje del nivel llega y compararlo con un algoritmo aleatorio.
+
+**CDcrash es un videojuego 2D platformer/side-scroller** en donde el jugador representado por un CD se mueve constantemente hacia la derecha hasta llegar al final del nivel o morir por no haber esquivado un obstáculo, para esquivar estos obstáculos el jugador tiene dos movimientos, uno es el típico salto de todo platformer y el otro es un teletransporte que además cambia la gravedad. El progreso del jugador en el nivel es representado por una barra y un porcentaje en la parte superior de la pantalla.
 
 ## 2. Objetivos:
 
