@@ -200,3 +200,33 @@ print("")
 confMatrix
 
 ```
+5. Clasificador por clase mayoritaria:  
+a. Implementar una función de nombre biggerclass_classifier, que reciba como parámetro el dataframe generado con anterioridad y genere una nueva columna de nombre prediction_class en donde se asigne siempre de la clase mayoritaria  
+La función deberá devolver el dataframe original junto a la nueva columna generada.  
+b. Repetir los puntos 4.c y 4.d pero aplicando la nueva función biggerclass_classifier
+
+```{r}
+library(readr)
+library(tidyverse)
+library(caret)
+
+biggerclass_classifier <- function(dataframe) {
+  # Calculates which value is the most present in inclinacion_peligrosa and assigns that new value to a new column called prediction_class, then returns the dataframe with this new column
+  inclinacion_peligrosa1 <- dataframe %>% filter(inclinacion_peligrosa == 1) %>% nrow()
+  inclinacion_peligrosa0 <- dataframe %>% filter(inclinacion_peligrosa == 0) %>% nrow()
+  
+  result = ifelse(inclinacion_peligrosa1 > inclinacion_peligrosa0, 1, 0)
+  
+  newDataframe <- dataframe %>% mutate(prediction_class = result)
+  return(newDataframe)
+}
+
+arboladoValidationDS <- read_csv("../data/arbolado-mza-dataset-validation.csv")
+
+predictionDS <- biggerclass_classifier(arboladoValidationDS)
+predictionDS
+
+cMatrix <- make_confusion_matrix(predictionDS)
+print("")
+cMatrix
+```
