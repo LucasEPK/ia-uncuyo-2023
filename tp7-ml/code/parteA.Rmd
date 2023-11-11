@@ -174,11 +174,10 @@ make_confusion_matrix <- function(dataframe) {
   falseNegatives <- dataframe %>%
     filter(prediction_class == 0 & prediction_class != inclinacion_peligrosa) %>%
     nrow()
-  
-  matrix <- matrix(c(trueNegatives, falsePositives, falseNegatives, truePositives), nrow = 2, ncol = 2, byrow = TRUE)
+  matrix <- matrix(c(truePositives, falseNegatives, falsePositives, trueNegatives), nrow = 2, ncol = 2, byrow = TRUE)
   # specify the column names and row names of matrix
-  colnames(matrix) = c('Predicted: No','Predicted: Yes')
-  rownames(matrix) <- c('Actual: No','Actual: Yes')
+  colnames(matrix) = c('Predicted: Yes','Predicted: No')
+  rownames(matrix) <- c('Actual: Yes','Actual: No')
   
   confusionMatrix1 <- as.table(matrix)
   
@@ -229,4 +228,87 @@ predictionDS
 cMatrix <- make_confusion_matrix(predictionDS)
 print("")
 cMatrix
+```
+
+6. A partir de una matriz de confusión es posible calcular distintas métricas que nos permiten determinar la calidad del modelo de clasificación.  
+Utilizar la siguiente imagen como guía crear funciones para calcular: Accuracy, Precision, Sensitivity, Specificity y calcularlas para las matrices de confusión generadas en los puntos 4 y 5.
+
+```{r}
+calculate_sensitivity <- function(cMatrix) {
+  # Given a confusion matrix, calculates and returns the sensitivity
+  tp <- cMatrix[1,1]
+  fn <- cMatrix[1,2]
+  sensitivity1 <- tp/(tp+fn)
+  return(sensitivity1)
+}
+
+calculate_specificity <- function(cMatrix) {
+  # Given a confusion matrix, calculates and returns the specificity  
+  tn <- cMatrix[2,2]
+  fp <- cMatrix[2,1]
+  specificity1 <- tn/(tn+fp)
+  return(specificity1)
+}
+
+calculate_precision <- function(cMatrix) {
+  # Given a confusion matrix, calculates and returns the precision
+  tp <- cMatrix[1,1]
+  fp <- cMatrix[2,1]
+  precision1 <- tp/(tp+fp)
+  return(precision1)
+}
+
+calculate_negativePV <- function(cMatrix) {
+  # Given a confusion matrix, calculates and returns the negative predictive value
+  tn <- cMatrix[2,2]
+  fn <- cMatrix[1,2]
+  negativePV <- tn/(tn+fn)
+  return(negativePV)
+}
+
+calculate_accuracy <- function(cMatrix) {
+  # Given a confusion matrix, calculates and returns the accuracy
+  tp <- cMatrix[1,1]
+  fn <- cMatrix[1,2]
+  tn <- cMatrix[2,2]
+  fp <- cMatrix[2,1]
+  
+  accuracy1 <- (tp+tn)/(tp+tn+fp+fn)
+  return(accuracy1)
+}
+
+calculate_metrics <- function(cMatrix) {
+  # Calculates sensitivity, specificity, precision, negative predictive value and the accuracy of the given confusion matrix and returns it as an array
+  sensitivity1 <- calculate_sensitivity(cMatrix)
+  specificity1 <- calculate_specificity(cMatrix)
+  precision1 <- calculate_precision(cMatrix)
+  negativePV <- calculate_negativePV(cMatrix)
+  accuracy1 <- calculate_accuracy(cMatrix)
+  
+  metrics <- array(data = c(sensitivity1, specificity1, precision1, negativePV, accuracy1), dim = c(5))
+  return(metrics)
+}
+
+print_metrics <- function(metrics) {
+  print("Sensitivity:")
+  print(metrics[1])
+  print("Specificity:")
+  print(metrics[2])
+  print("Precision:")
+  print(metrics[3])
+  print("Negative Predictive Value:")
+  print(metrics[4])
+  print("Accuracy:")
+  print(metrics[5])
+}
+
+randomClassifierMetrics <- calculate_metrics(confMatrix)
+print("Random classifier metrics:")
+print_metrics(randomClassifierMetrics)
+print("")
+print("Bigger class classifier metrics:")
+biggerclassClassifierMetrics <- calculate_metrics(cMatrix)
+print_metrics(biggerclassClassifierMetrics)
+
+
 ```
