@@ -73,4 +73,8 @@ Como es un juego en tiempo real el entorno va cambiando cada segundo, haciendo q
 
 ## 10. Bibliografía
 
-[AIMA 3rd edition](https://zoo.cs.yale.edu/classes/cs470/materials/aima2010.pdf)
+[Stuart J. Russell and Peter Norvig, Artificial Intelligence A Modern Approach, Third Edition]() - [Información sobre el algoritmo genético y como implementarlo]
+
+[Ambuehl, Nathan, "Investigating Genetic Algorithm Optimization Techniques in Video Games" (2017). Undergraduate Honors Theses. Paper 748. https://dc.etsu.edu/honors/748](https://dc.etsu.edu/honors/748/) - [Uso de algoritmos genéticos para resolver Super Mario Bros]
+
+[AI Learns to play JUMP KING](https://youtu.be/DmQ4Dqxs0HI?si=SM80CKFyj_3gc2YN&t=66) - [Inspiración para la idea de usar algoritmos genéticos que resuelvan videojuegos]
