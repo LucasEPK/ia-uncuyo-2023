@@ -69,7 +69,7 @@ Como es un juego en tiempo real el entorno va cambiando cada segundo, haciendo q
 
 ## 9. Cronograma estimado de actividades
 
-![]()
+![](imgs/gantt.PNG)
 
 ## 10. Bibliografía
 
