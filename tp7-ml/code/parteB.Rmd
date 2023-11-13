@@ -12,6 +12,103 @@ library(readr)
 library(dplyr)
 library(ranger)
 
+make_confusion_matrix <- function(dataframe) {
+  # Makes a confusion matrix using dplyr with the prediction_class of the dataframe and the inclinacion_peligrosa of the dataframe
+  
+  # Calculates True Positives
+  truePositives <- dataframe %>%
+    filter(prediction_class == 1 & prediction_class == inclinacion_peligrosa) %>%
+    nrow()
+  # Calculates True Negatives
+  trueNegatives <- dataframe %>%
+    filter(prediction_class == 0 & prediction_class == inclinacion_peligrosa) %>%
+    nrow()
+  # Calculates False Positives
+  falsePositives <- dataframe %>%
+    filter(prediction_class == 1 & prediction_class != inclinacion_peligrosa) %>%
+    nrow()
+  # Calculates False Negatives
+  falseNegatives <- dataframe %>%
+    filter(prediction_class == 0 & prediction_class != inclinacion_peligrosa) %>%
+    nrow()
+  matrix <- matrix(c(truePositives, falseNegatives, falsePositives, trueNegatives), nrow = 2, ncol = 2, byrow = TRUE)
+  # specify the column names and row names of matrix
+  colnames(matrix) = c('Predicted: Yes','Predicted: No')
+  rownames(matrix) <- c('Actual: Yes','Actual: No')
+  
+  confusionMatrix1 <- as.table(matrix)
+  
+  return(confusionMatrix1)
+}
+
+calculate_sensitivity <- function(cMatrix) {
+  # Given a confusion matrix, calculates and returns the sensitivity
+  tp <- cMatrix[1,1]
+  fn <- cMatrix[1,2]
+  sensitivity1 <- tp/(tp+fn)
+  return(sensitivity1)
+}
+
+calculate_specificity <- function(cMatrix) {
+  # Given a confusion matrix, calculates and returns the specificity  
+  tn <- cMatrix[2,2]
+  fp <- cMatrix[2,1]
+  specificity1 <- tn/(tn+fp)
+  return(specificity1)
+}
+
+calculate_precision <- function(cMatrix) {
+  # Given a confusion matrix, calculates and returns the precision
+  tp <- cMatrix[1,1]
+  fp <- cMatrix[2,1]
+  precision1 <- tp/(tp+fp)
+  return(precision1)
+}
+
+calculate_negativePV <- function(cMatrix) {
+  # Given a confusion matrix, calculates and returns the negative predictive value
+  tn <- cMatrix[2,2]
+  fn <- cMatrix[1,2]
+  negativePV <- tn/(tn+fn)
+  return(negativePV)
+}
+
+calculate_accuracy <- function(cMatrix) {
+  # Given a confusion matrix, calculates and returns the accuracy
+  tp <- cMatrix[1,1]
+  fn <- cMatrix[1,2]
+  tn <- cMatrix[2,2]
+  fp <- cMatrix[2,1]
+  
+  accuracy1 <- (tp+tn)/(tp+tn+fp+fn)
+  return(accuracy1)
+}
+
+calculate_metrics <- function(cMatrix) {
+  # Calculates sensitivity, specificity, precision, negative predictive value and the accuracy of the given confusion matrix and returns it as an array
+  sensitivity1 <- calculate_sensitivity(cMatrix)
+  specificity1 <- calculate_specificity(cMatrix)
+  precision1 <- calculate_precision(cMatrix)
+  negativePV <- calculate_negativePV(cMatrix)
+  accuracy1 <- calculate_accuracy(cMatrix)
+  
+  metrics <- array(data = c(sensitivity1, specificity1, precision1, negativePV, accuracy1), dim = c(5))
+  return(metrics)
+}
+
+print_metrics <- function(metrics) {
+  print("Sensitivity:")
+  print(metrics[1])
+  print("Specificity:")
+  print(metrics[2])
+  print("Precision:")
+  print(metrics[3])
+  print("Negative Predictive Value:")
+  print(metrics[4])
+  print("Accuracy:")
+  print(metrics[5])
+}
+
 data_train <- read_csv("../data/arbolado-mza-dataset-train.csv",col_types = cols(
   id = col_integer(),
   especie = col_character(),
@@ -38,7 +135,8 @@ data_validation <-  read_csv("../data/arbolado-mza-dataset-validation.csv",col_t
   lat = col_double(),
   seccion = col_integer(),
   nombre_seccion = col_character(),
-  area_seccion = col_double()
+  area_seccion = col_double(),
+  inclinacion_peligrosa = col_integer()
 ))
 
 data_test <-  read_csv("../data/arbolado-mza-dataset-test.csv",col_types = cols(
@@ -55,27 +153,46 @@ data_test <-  read_csv("../data/arbolado-mza-dataset-test.csv",col_types = cols(
   area_seccion = col_double()
 ))
 
-# Training model
-train_formula <- formula(inclinacion_peligrosa~especie+ultima_modificacion+altura+circ_tronco_cm+diametro_tronco+long+lat+seccion+area_seccion)
+# Undersampling
 
-rf_model <- ranger(train_formula, data = data_train)
+cantArbolesPeligrosos <- data_train %>% filter(inclinacion_peligrosa == 1) %>% nrow()
+cantArbolesNoPeligrosos <- data_train %>% filter(inclinacion_peligrosa == 0) %>% nrow()
+cantArbolesPeligrosos
+
+arbolesPeligrososDS <- data_train %>% filter(inclinacion_peligrosa == 1)
+arbolesNoPeligrososDS <- data_train %>% filter(inclinacion_peligrosa == 0)
+
+arbolesNoPeligrososUndersampledDS <- arbolesNoPeligrososDS %>% sample_n(cantArbolesPeligrosos)
+
+underSampledTrainData <- rbind(arbolesPeligrososDS, arbolesNoPeligrososUndersampledDS)
+
+rows1 <- nrow(underSampledTrainData)
+rows1
+
+# Training model
+train_formula <- formula(inclinacion_peligrosa~id+especie+ultima_modificacion+altura+circ_tronco_cm+diametro_tronco+long+lat+seccion+nombre_seccion+area_seccion)
+
+rf_model <- ranger(train_formula, data = underSampledTrainData)
 
 # Using model on validation
 preds_tree_probs = predict(rf_model, data_validation)
 
 preds_tree = ifelse(preds_tree_probs$predictions >=0.5,1,0)
 
-validation_comparison <- data.frame(id=data_validation$id, inclinacionPeligrosa= data_validation$inclinacion_peligrosa,inclinacion_peligrosa_pred=preds_tree)
+validation_comparison <- data.frame(id=data_validation$id, inclinacion_peligrosa = data_validation$inclinacion_peligrosa,prediction_class=preds_tree)
 
-
-confusionMatrix(as.factor(validation_comparison$inclinacion_peligrosa_pred),as.factor(data_validation$inclinacion_peligrosa))
+cMatrix <- make_confusion_matrix(validation_comparison)
+cMatrix
+metrics <- calculate_metrics(cMatrix)
+print_metrics(metrics)
 
 # Using model on test
 test_preds_tree_probs = predict(rf_model, data_test)
 
-test_preds_tree = ifelse(test_preds_tree_probs$predictions >=0.5,1,0)
+#test_preds_tree = ifelse(test_preds_tree_probs$predictions >=0.5,1,0)
+test_preds_tree = test_preds_tree_probs$predictions
 
 submission <- data.frame(id=data_test$id, inclinacion_peligrosa = test_preds_tree)
-write_csv(submission,"../data/arbolado-mza-dataset-envio-rf0.csv")
+write_csv(submission,"../data/arbolado-mza-dataset-envio-rf2-undersampled.csv")
 submission
 ```
