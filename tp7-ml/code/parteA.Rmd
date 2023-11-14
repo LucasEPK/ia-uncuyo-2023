@@ -312,3 +312,54 @@ print_metrics(biggerclassClassifierMetrics)
 
 
 ```
+
+7. Validación cruzada (Cross validation) (k-folds):  
+La validación cruzada es una técnica para estimar el error de generalización de un algoritmo/modelo de machine learning. La técnica consiste en (previo realizar una mezcla aleatoria) separar el conjunto de datos en k partes (normalmente denominadas folds). Luego en la primera iteración se utilizan k-1 partes para entrenar E1 y se utiliza la restante para test. El proceso se repite por k iteraciones utilizando en cada una diferentes conjuntos de entrenamiento y test. (Ver figura)  
+a. Crear una función de nombre create_folds() que reciba como parámetro un dataframe y la cantidad de folds y devuelva una lista de R con la siguiente estructura:  
+list(Fold1=c(...), Fold2=c(..),... Fold10=c())  
+Donde Fold1 va a contender los índices del dataframe que fueron seleccionados para el primer fold, y así con los demás.
+b. Crear una función de nombre cross_validation() que reciba como parámetro un data frame y un número de folds y entrene un modelo de árbol de decisión (utilizar paquete rpart) para cada uno de los posibles conjuntos de entrenamiento y calcule las métricas: Accuracy, Precision, Sensitivity, Specificity para cada uno de los posibles conjuntos de tests. Devolver media y desviación estándar.
+
+```{r}
+library(readr)
+library(tidyverse)
+
+create_folds <- function(dataframe, nFolds) {
+  rows <- nrow(dataframe)
+  
+  elementsPerFold <- floor(rows/nFolds)
+  
+  foldList <- list()
+  for (fold in 1:nFolds) {
+    
+      indexBegin <- (fold-1) * elementsPerFold + 1
+    # This is divided so in the last fold all the remaining elements caused by the ceiling of the elementsPerFold are placed in the last fold
+    if(fold != nFolds) {
+      indexEnd <- (fold) * elementsPerFold
+    } else {
+      indexEnd <- rows
+    }
+      
+      foldList[[paste("Fold", fold)]] <- c(indexBegin:indexEnd)
+  }
+  
+  return(foldList)
+}
+
+cross_validation <- function(dataframe, nFolds) {
+  
+}
+
+# Load the train dataset
+arboladoTrainDS <- read_csv("../data/arbolado-mza-dataset-train.csv")
+
+# Shuffles the dataset
+set.seed(211)
+rows <- sample(nrow(arboladoTrainDS))
+shuffledTrainDS <- arboladoTrainDS[rows,]
+
+nFolds <- 10
+
+foldsList <- create_folds(shuffledTrainDS, nFolds)
+#cross_validation(shuffledTrainDS, nFolds)
+```
