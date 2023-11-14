@@ -323,6 +323,68 @@ b. Crear una función de nombre cross_validation() que reciba como parámetro un
 ```{r}
 library(readr)
 library(tidyverse)
+library(rpart)
+
+calculate_list_mean <- function(list, nFolds) {
+  # Calculates the mean of a list of metrics, for every metric and returns the mean of the metrics in an array
+  
+  sensitivitySum <- 0
+  specificitySum <- 0
+  precisionSum <- 0
+  negativePVsum <- 0
+  accuracySum <- 0
+    
+  for (fold in 1:nFolds) { 
+    
+    metrics <- list[[fold]]
+    
+    sensitivitySum <- sensitivitySum + metrics[1]
+    specificitySum <- specificitySum + metrics[2]
+    precisionSum <- precisionSum + metrics[3]
+    negativePVsum <- negativePVsum + metrics[4]
+    accuracySum <- accuracySum + metrics[5]
+    
+  }
+  
+  sensitivityMean <- sensitivitySum / nFolds
+  specificityMean <- specificitySum / nFolds
+  precisionMean <- precisionSum / nFolds
+  negativePVmean <- negativePVsum / nFolds
+  accuracyMean <- accuracySum / nFolds
+  
+  resultMetrics <- array(data = c(sensitivityMean, specificityMean, precisionMean, negativePVmean, accuracyMean), dim = c(5))
+  return(resultMetrics)
+}
+
+calculate_list_sd <-function(list, nFolds) {
+  # Calculates the standard deviation of a list of metrics, for every metric and returns the standard deviation of the metrics in an array
+  sensitivityC <- c()
+  specificityC <- c()
+  precisionC <- c()
+  negativePVc <- c()
+  accuracyC <- c()
+    
+  for (fold in 1:nFolds) { 
+    
+    metrics <- list[[fold]]
+    
+    sensitivityC <- c(sensitivitySum, metrics[1])
+    specificityC <- c(specificitySum, metrics[2])
+    precisionC <- c(precisionSum, metrics[3])
+    negativePVc <- c(negativePVsum, metrics[4])
+    accuracyC <- c(accuracySum, metrics[5])
+    
+  }
+  
+  sensitivitySD <- sd(sensitivityC)
+  specificitySD <- sd(specificityC)
+  precisionSD <- sd(precisionC)
+  negativePVsd <- sd(negativePVc)
+  accuracySD <- sd(accuracyC)
+  
+  resultMetrics <- array(data = c(sensitivitySD, specificitySD, precisionSD, negativePVsd, accuracySD), dim = c(5))
+  return(resultMetrics)
+}
 
 create_folds <- function(dataframe, nFolds) {
   rows <- nrow(dataframe)
@@ -347,8 +409,36 @@ create_folds <- function(dataframe, nFolds) {
 }
 
 cross_validation <- function(dataframe, nFolds) {
+  foldIndexList <- create_folds(dataframe, nFolds)
   
+  metricsList <- list()
+  
+  for (fold in 1:nFolds) {
+    # Here we remove the validation fold
+    ignoredIndexes <- foldIndexList[[fold]]
+    
+    trainFoldsDF <- dataframe[-ignoredIndexes,]
+    validationFoldDF <- dataframe[ignoredIndexes,]
+    # Here we calculate the prediction for the other folds
+    train_formula <- formula(inclinacion_peligrosa~id+especie+ultima_modificacion+altura+circ_tronco_cm+diametro_tronco+long+lat+seccion+nombre_seccion+area_seccion)
+    tree_model <- rpart(train_formula, data = trainFoldsDF)
+    predProbs <- predict(tree_model, validationFoldDF, type="class")
+    
+    predColumn <- ifelse(predProbs$predictions >=0.5,1,0)
+    validation_comparison <- data.frame(id=validationFoldDF$id, inclinacion_peligrosa = validationFoldDF$inclinacion_peligrosa, prediction_class = predColumn)
+
+    cMatrix <- make_confusion_matrix(validation_comparison)
+    metrics <- calculate_metrics(cMatrix)
+    
+    metricsList[[paste("Metric", fold)]] <- metrics
+  }
+  
+  listMean <- calculate_list_mean(metricsList, nFolds)
+  listSD <- calculate_list_sd(metricsList, nFolds)
+  print_metrics(listMean)
+  print_metrics(listSD)
 }
+
 
 # Load the train dataset
 arboladoTrainDS <- read_csv("../data/arbolado-mza-dataset-train.csv")
@@ -360,6 +450,32 @@ shuffledTrainDS <- arboladoTrainDS[rows,]
 
 nFolds <- 10
 
-foldsList <- create_folds(shuffledTrainDS, nFolds)
-#cross_validation(shuffledTrainDS, nFolds)
+cross_validation(shuffledTrainDS, nFolds)
+
+
+# Test to see how lists and dataframes work
+#folddd <- list(fold1 = c(1,2,3,4), fold2 = c(5,6,7,8))
+#firstFoldIndexes <- folddd[[1]]
+#folddd[[2]]
+
+#my_data <- data.frame(
+#  ID = 1:8,
+#  Name = c("Alice", "Bob", "Charlie", "David", "Eva", "Frank", "Grace", "Henry"),
+#  Age = c(25, 30, 22, 35, 28, 40, 26, 32),
+#  Score = c(92, 85, 78, 94, 88, 75, 90, 82)
+#)
+
+
+#lol <- my_data[-firstFoldIndexes,]
+#lol
+#bruh1 <- array(data = c("a", "b", "c", "d", "e"), dim = c(5))
+#bruh2 <- array(data = c("f", "g", "h", "i", "l"), dim = c(5))
+#result <- list(data1 = bruh1, data2 = bruh2)
+#result$data1[2]
+
+
+#xd <- c()
+#xd
+#xd <- c(xd, 1)
+#xd
 ```
