@@ -368,11 +368,11 @@ calculate_list_sd <-function(list, nFolds) {
     
     metrics <- list[[fold]]
     
-    sensitivityC <- c(sensitivitySum, metrics[1])
-    specificityC <- c(specificitySum, metrics[2])
-    precisionC <- c(precisionSum, metrics[3])
-    negativePVc <- c(negativePVsum, metrics[4])
-    accuracyC <- c(accuracySum, metrics[5])
+    sensitivityC <- c(sensitivityC, metrics[1])
+    specificityC <- c(specificityC, metrics[2])
+    precisionC <- c(precisionC, metrics[3])
+    negativePVc <- c(negativePVc, metrics[4])
+    accuracyC <- c(accuracyC, metrics[5])
     
   }
   
@@ -420,12 +420,11 @@ cross_validation <- function(dataframe, nFolds) {
     trainFoldsDF <- dataframe[-ignoredIndexes,]
     validationFoldDF <- dataframe[ignoredIndexes,]
     # Here we calculate the prediction for the other folds
-    train_formula <- formula(inclinacion_peligrosa~id+especie+ultima_modificacion+altura+circ_tronco_cm+diametro_tronco+long+lat+seccion+nombre_seccion+area_seccion)
-    tree_model <- rpart(train_formula, data = trainFoldsDF)
+    train_formula <- formula(inclinacion_peligrosa~id+altura+circ_tronco_cm+diametro_tronco+long+lat+seccion+area_seccion)
+    tree_model <- rpart(train_formula, data = trainFoldsDF, method = "class")
     predProbs <- predict(tree_model, validationFoldDF, type="class")
-    
-    predColumn <- ifelse(predProbs$predictions >=0.5,1,0)
-    validation_comparison <- data.frame(id=validationFoldDF$id, inclinacion_peligrosa = validationFoldDF$inclinacion_peligrosa, prediction_class = predColumn)
+
+    validation_comparison <- data.frame(id=validationFoldDF$id, inclinacion_peligrosa = validationFoldDF$inclinacion_peligrosa, prediction_class = predProbs)
 
     cMatrix <- make_confusion_matrix(validation_comparison)
     metrics <- calculate_metrics(cMatrix)
@@ -435,7 +434,11 @@ cross_validation <- function(dataframe, nFolds) {
   
   listMean <- calculate_list_mean(metricsList, nFolds)
   listSD <- calculate_list_sd(metricsList, nFolds)
+  print("")
+  print("Mean")
   print_metrics(listMean)
+  print("")
+  print("Standard deviation")
   print_metrics(listSD)
 }
 
@@ -449,10 +452,10 @@ rows <- sample(nrow(arboladoTrainDS))
 shuffledTrainDS <- arboladoTrainDS[rows,]
 
 nFolds <- 10
-
 cross_validation(shuffledTrainDS, nFolds)
+```
 
-
+```{r}
 # Test to see how lists and dataframes work
 #folddd <- list(fold1 = c(1,2,3,4), fold2 = c(5,6,7,8))
 #firstFoldIndexes <- folddd[[1]]
