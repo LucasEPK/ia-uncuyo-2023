@@ -1,11 +1,15 @@
 import math
+# This module implements a decision tree for the tennis.csv dataset
+
 class Node:
+    # Nodes for the decision tree
     def __init__(self, label=None, children=None, classification=None):
         self.label = label # Attribute being tested
         self.children = children or {} # Dictionary of (value, subtree) pairs
-        self.classification = classification # The class label (leaf nodes only)
 
 def DECISION_TREE_LEARNING(examples, attributes, parent_examples):
+    # This is an implementation of the pseudocode provided by AIMA on chapter 18
+
     if not examples:
         return PLURALITY_VALUE(parent_examples)
     elif all_same_classification(examples):
@@ -16,7 +20,7 @@ def DECISION_TREE_LEARNING(examples, attributes, parent_examples):
         A = argmax_importance(attributes, examples)
         tree = Node(label=A)
 
-        # hardcoded for now
+        # Hardcoded for now
         match A:
             case 'outlook':
                 attributeSlot = 0
@@ -40,13 +44,13 @@ def PLURALITY_VALUE(examples):
 
     class_counts = {}
     for example in examples:
-        label = example[-1]  # Assuming the target attribute is the last one
+        label = example[-1]
         class_counts[label] = class_counts.get(label, 0) + 1
     
     return max(class_counts, key=class_counts.get)
 
 def argmax_importance(attributes, examples):
-    # This will be the attribute with the highest information gain
+    # This chooses the attribute with the highest information gain
 
     maxGainAttribute = None
     maxGain = -1
@@ -70,7 +74,7 @@ def all_same_classification(examples):
 def unique_values(attribute, examples):
     # Get unique values of the specified attribute from examples
 
-    # hardcoded for now
+    # Hardcoded for now
     match attribute:
         case 'outlook':
             attributeSlot = 0
@@ -83,7 +87,7 @@ def unique_values(attribute, examples):
 
     return set(example[attributeSlot] for example in examples)
 
-# ================================== aux functions =================================
+# ================================== Aux functions =================================
 
 def calculate_positives(examples):
     count = 0
@@ -108,9 +112,9 @@ def B(q):
     return entropy(q)
 
 def H(attribute, attribute_values, examples, p, n): 
-    # remainder function
+    # Remainder function
 
-    # hardcoded for now
+    # Hardcoded for now
     match attribute:
         case 'outlook':
             attributeSlot = 0
