@@ -17,7 +17,6 @@ El algoritmo genético tiene que:
 
 - Llegar al 100% (nivel completado) o a un buen porcentaje (mayor que 80%-70%)
 - Coleccionar el mayor numero de monedas (máximo 3)
-- Minimizar el numero de intentos
 
 ## 3. Alcance:
 
