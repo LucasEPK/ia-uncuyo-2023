@@ -30,7 +30,8 @@ El alcance del proyecto se limitará al nivel 1 de CDcrash. Las variables y comp
 ## 5. Métricas:
 
 - Numero de monedas coleccionadas
-- Numero de intentos/generaciones que se tarda el algoritmo en llegar al 100%
+- Numero de acciones requeridas (saltos y teletransportes)
+- Tiempo de entrenamiento del algoritmo
 
 ## 6. Propuesta algoritmo genético:
 
