@@ -77,4 +77,6 @@ Como es un juego en tiempo real el entorno va cambiando cada segundo, haciendo q
 
 [Ambuehl, Nathan, "Investigating Genetic Algorithm Optimization Techniques in Video Games" (2017). Undergraduate Honors Theses. Paper 748. https://dc.etsu.edu/honors/748](https://dc.etsu.edu/honors/748/) - [Uso de algoritmos genéticos para resolver Super Mario Bros]
 
+[Evolution strategies as a scalable alternative to reinforcement learning. (n.d.). https://openai.com/research/evolution-strategies](https://openai.com/research/evolution-strategies)
+
 [AI Learns to play JUMP KING](https://youtu.be/DmQ4Dqxs0HI?si=SM80CKFyj_3gc2YN&t=66) - [Inspiración para la idea de usar algoritmos genéticos que resuelvan videojuegos]
