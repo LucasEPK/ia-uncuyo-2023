@@ -11,4 +11,7 @@
 
 ## B
 
-Para datos de tipo real, emplean estrategias como la ganancia de información o el índice Gini para dividir los datos. Manejan variables numéricas mediante particiones binarias o transformaciones, y las categóricas con técnicas como one-hot encoding. Para prevenir el sobreajuste, se utilizan métodos como la poda del árbol o limitar la profundidad. Además, pueden abordar desafíos como datos desbalanceados asignando pesos de clase. Los ensambles, como Random Forest, combinan múltiples árboles para mejorar la generalización.
+Para los datos de tipo real, se necesita un poco de "preprocesamiento" antes de calcularle la ganancia de información o el índice Gini.
+
+Este "preprocesamiento" es simplemente dividir los datos en intervalos que abarquen los valores de los datos reales convirtiendo así los datos reales en datos discretos.  
+Existen diferentes maneras de hacer esto, pero una de ellas es ordenar los valores reales de menor a mayor y calcular la media entre los valores adyacentes, ahora estas medias van a hacer de variables discretas, de la forma "atributo < media del valor", para todos los valores del atributo.
