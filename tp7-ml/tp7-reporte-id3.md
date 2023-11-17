@@ -3,7 +3,11 @@
 
 ## A
 
+![](imgs/decision_tree_output.PNG)  
+*Salida de consola*
 
+![](imgs/decision_tree.png)  
+*Arbol graficado*
 
 ## B
 
