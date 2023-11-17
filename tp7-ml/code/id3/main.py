@@ -32,7 +32,8 @@ data1 = [
 ]
 
 attributes = ['outlook', 'temp', 'humidity', 'windy']
-#tree = DECISION_TREE_LEARNING(data, attributes, None)
+tree = DECISION_TREE_LEARNING(data, attributes, None)
+print_tree(tree)
 
 bruh = unique_values('windy', data1)
 print(bruh)

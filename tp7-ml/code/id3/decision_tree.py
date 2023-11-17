@@ -1,9 +1,9 @@
 import math
 class Node:
     def __init__(self, label=None, children=None, classification=None):
-        self.label = label
-        self.children = children or {}
-        self.classification = classification
+        self.label = label # Attribute being tested
+        self.children = children or {} # Dictionary of (value, subtree) pairs
+        self.classification = classification # The class label (leaf nodes only)
 
 def DECISION_TREE_LEARNING(examples, attributes, parent_examples):
     if not examples:
@@ -16,8 +16,20 @@ def DECISION_TREE_LEARNING(examples, attributes, parent_examples):
         A = argmax_importance(attributes, examples)
         tree = Node(label=A)
 
+        # hardcoded for now
+        match A:
+            case 'outlook':
+                attributeSlot = 0
+            case 'temp':
+                attributeSlot = 1
+            case 'humidity':
+                attributeSlot = 2
+            case 'windy':
+                attributeSlot = 3
+
+
         for vk in unique_values(A, examples):
-            exs = [e for e in examples if e[A] == vk]
+            exs = [e for e in examples if e[attributeSlot] == vk]
             subtree = DECISION_TREE_LEARNING(exs, [attr for attr in attributes if attr != A], examples)
             tree.children[(A, vk)] = subtree
 
@@ -122,3 +134,13 @@ def information_gain(attribute, attribute_values, examples, p, n):
     goal_entropy = B(p / (p + n))
     remainder = H(attribute, attribute_values, examples, p, n)
     return goal_entropy - remainder
+
+def print_tree(node, depth=0):
+    if node is not None:
+        if isinstance(node, str):
+            print("  " * depth + f"Class: {node}")
+        else:
+            print("  " * depth + f"Attribute: {node.label}")
+            for (value, subtree) in node.children.items():
+                print("  " * (depth + 1) + f"Value: {value}")
+                print_tree(subtree, depth + 2)
